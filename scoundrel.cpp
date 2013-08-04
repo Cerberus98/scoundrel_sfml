@@ -33,6 +33,7 @@ void unload_map() {
   for (int i=0; i <MAP_HEIGHT; ++i) {
     delete game_map[i];
   }
+  delete[] game_map;
 }
 
 void dump_map() {
@@ -60,9 +61,8 @@ void init_game()
 
 void deinitialize_game(sf::RenderWindow* window) {
   delete window;
-  // Why don't I need to deallocate these?
-  //delete textures;
-  //delete tiles;
+  delete[] textures;
+  delete[] tiles;
 }
 
 void game_loop(sf::RenderWindow* window) {
