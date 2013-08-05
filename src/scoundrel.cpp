@@ -3,6 +3,9 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+#include "player.h"
+
+
 const int MAP_WIDTH = 100, MAP_HEIGHT = 100;
 const int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const int TILE_WIDTH = 32, TILE_HEIGHT = 32;
@@ -65,13 +68,37 @@ void deinitialize_game(sf::RenderWindow* window) {
   delete[] tiles;
 }
 
-void game_loop(sf::RenderWindow* window) {
-  while (window->isOpen()) {
-    sf::Event event;
-    while (window->pollEvent(event)) {
-      if (event.type == sf::Event::Closed)
-        window->close();
+void handle_input(sf::RenderWindow* window) {
+  sf::Event event;
+  while (window->pollEvent(event)) {
+    if (event.type == sf::Event::KeyPressed) {
+      switch(event.key.code) {
+        case sf::Keyboard::Escape:
+          window->close();
+          break;
+        case sf::Keyboard::Up:
+          //Up Arrow
+          break;
+        case sf::Keyboard::Down:
+          //Down Arrow
+          break;
+        case sf::Keyboard::Right:
+          //Left Arrow
+          break;
+        case sf::Keyboard::Left:
+          //Right Arrow
+          break;
+      }
     }
+    if (event.type == sf::Event::Closed)
+      window->close();
+  }
+}
+
+void game_loop(sf::RenderWindow* window) {
+  Player player;
+  while (window->isOpen()) {
+    handle_input(window);
     window->clear(sf::Color::Green);
     for (int i=0; i < MAP_HEIGHT; ++i) {
       for (int j=0; j < MAP_WIDTH; ++j) {
