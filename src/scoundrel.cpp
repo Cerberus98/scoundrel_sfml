@@ -13,6 +13,33 @@ int** game_map;
 sf::Sprite* tiles;
 sf::Texture* textures;
 
+struct Point {
+  int x, y;
+};
+
+Point camera;
+
+Point toTileCoords(Point pos) {
+  Point tile_coords;
+  tile_coords.x = pos.x / TILE_WIDTH;
+  tile_coords.y = pos.y / TILE_HEIGHT;
+  return tile_coords;
+}
+
+Point fromTileCoords(Point pos) {
+  Point world_coords;
+  world_coords.x = pos.x * TILE_WIDTH;
+  world_coords.y = pos.y * TILE_HEIGHT;
+  return world_coords;
+}
+
+Point fromTileCoords(int x, int y) {
+  Point world_coords;
+  world_coords.x = x * TILE_WIDTH;
+  world_coords.y = y * TILE_HEIGHT;
+  return world_coords;
+}
+
 sf::Texture load_image(std::string image_path) {
   sf::Texture tex;
   if (!tex.loadFromFile(image_path)) {
@@ -77,16 +104,16 @@ void handle_input(sf::RenderWindow* window) {
           window->close();
           break;
         case sf::Keyboard::Up:
-          //Up Arrow
+          camera.y -= 2;
           break;
         case sf::Keyboard::Down:
-          //Down Arrow
+          camera.y += 2;
           break;
         case sf::Keyboard::Right:
-          //Left Arrow
+          camera.x += 2;
           break;
         case sf::Keyboard::Left:
-          //Right Arrow
+          camera.x -= 2;
           break;
       }
     }
@@ -98,12 +125,34 @@ void handle_input(sf::RenderWindow* window) {
 void game_loop(sf::RenderWindow* window) {
   Player player;
   while (window->isOpen()) {
+    //TODO: Implement a real View class/struct
+    Point view;
+    view.x = camera.x + WINDOW_WIDTH;
+    view.y = camera.y + WINDOW_HEIGHT;
+
     handle_input(window);
-    window->clear(sf::Color::Green);
+    window->clear(sf::Color::Black);
+    Point tile_start = toTileCoords(camera);
+    // Better culling can be had. Maintain a running offset and only start drawing the tiles that
+    // border the actual view. But this works for now
     for (int i=0; i < MAP_HEIGHT; ++i) {
       for (int j=0; j < MAP_WIDTH; ++j) {
+        if (j < 0 or i < 0 or i >= MAP_HEIGHT or j >= MAP_WIDTH)
+          continue;
+        Point tile_world_coords = fromTileCoords(j, i);
+        bool off_x = false, off_y = false;
+        if (tile_world_coords.x + TILE_WIDTH < camera.x or tile_world_coords.x > view.x)
+          off_x = true;
+
+        if (tile_world_coords.y + TILE_HEIGHT < camera.y or tile_world_coords.y > view.y)
+          off_y = true;
+
+        if (off_x && off_y) {
+          continue;
+        }
+
         sf::Sprite tile = tiles[0];
-        tile.setPosition(j * TILE_WIDTH, i * TILE_HEIGHT);
+        tile.setPosition(j * TILE_WIDTH - camera.x, i * TILE_HEIGHT - camera.y);
         window->draw(tile);
       }
     }
