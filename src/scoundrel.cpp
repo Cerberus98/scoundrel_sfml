@@ -136,20 +136,21 @@ void game_loop(sf::RenderWindow* window) {
     // Better culling can be had. Maintain a running offset and only start drawing the tiles that
     // border the actual view. But this works for now
     for (int i=0; i < MAP_HEIGHT; ++i) {
+      Point row_coords = fromTileCoords(0, i);
+      if (row_coords.y + TILE_HEIGHT < camera.y)
+        continue;
+      if (row_coords.y > view.y)
+        break;
+
       for (int j=0; j < MAP_WIDTH; ++j) {
         if (j < 0 or i < 0 or i >= MAP_HEIGHT or j >= MAP_WIDTH)
           continue;
         Point tile_world_coords = fromTileCoords(j, i);
-        bool off_x = false, off_y = false;
-        if (tile_world_coords.x + TILE_WIDTH < camera.x or tile_world_coords.x > view.x)
-          off_x = true;
 
-        if (tile_world_coords.y + TILE_HEIGHT < camera.y or tile_world_coords.y > view.y)
-          off_y = true;
-
-        if (off_x && off_y) {
-          continue;
-        }
+        if (tile_world_coords.x + TILE_WIDTH < camera.x)
+           continue;
+        if (tile_world_coords.x > view.x)
+          break;
 
         sf::Sprite tile = tiles[0];
         tile.setPosition(j * TILE_WIDTH - camera.x, i * TILE_HEIGHT - camera.y);
