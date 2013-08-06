@@ -104,16 +104,16 @@ void handle_input(sf::RenderWindow* window) {
           window->close();
           break;
         case sf::Keyboard::Up:
-          camera.y -= 2;
+          camera.y -= 8;
           break;
         case sf::Keyboard::Down:
-          camera.y += 2;
+          camera.y += 8;
           break;
         case sf::Keyboard::Right:
-          camera.x += 2;
+          camera.x += 8;
           break;
         case sf::Keyboard::Left:
-          camera.x -= 2;
+          camera.x -= 8;
           break;
       }
     }
@@ -133,30 +133,29 @@ void game_loop(sf::RenderWindow* window) {
     handle_input(window);
     window->clear(sf::Color::Black);
     Point tile_start = toTileCoords(camera);
-    // Better culling can be had. Maintain a running offset and only start drawing the tiles that
-    // border the actual view. But this works for now
-    for (int i=0; i < MAP_HEIGHT; ++i) {
+
+    Point draw_start = toTileCoords(camera);
+    Point draw_end = toTileCoords(view);
+    draw_start.x = draw_start.x < 0 ? 0 : draw_start.x;
+    draw_start.y = draw_start.y < 0 ? 0 : draw_start.y;
+    draw_start.x = draw_start.x > MAP_WIDTH ? MAP_WIDTH : draw_start.x;
+    draw_start.y = draw_start.y > MAP_HEIGHT ? MAP_HEIGHT : draw_start.y;
+    draw_end.x = draw_end.x > MAP_WIDTH ? MAP_WIDTH : draw_end.x;
+    draw_end.y = draw_end.y > MAP_HEIGHT ? MAP_HEIGHT : draw_end.y;
+    draw_end.x = draw_end.x < 0 ? 0 : draw_end.x;
+    draw_end.y = draw_end.y < 0 ? 0 : draw_end.y;
+
+    for (int i=draw_start.y-1; i < draw_end.y+1; ++i) {
       Point row_coords = fromTileCoords(0, i);
-      if (row_coords.y + TILE_HEIGHT < camera.y)
-        continue;
-      if (row_coords.y > view.y)
-        break;
-
-      for (int j=0; j < MAP_WIDTH; ++j) {
-        if (j < 0 or i < 0 or i >= MAP_HEIGHT or j >= MAP_WIDTH)
-          continue;
+      for (int j=draw_start.x-1; j < draw_end.x+1; ++j) {
         Point tile_world_coords = fromTileCoords(j, i);
-
-        if (tile_world_coords.x + TILE_WIDTH < camera.x)
-           continue;
-        if (tile_world_coords.x > view.x)
-          break;
 
         sf::Sprite tile = tiles[0];
         tile.setPosition(j * TILE_WIDTH - camera.x, i * TILE_HEIGHT - camera.y);
         window->draw(tile);
       }
     }
+
     window->display();
   }
 }
@@ -166,6 +165,7 @@ int main(int argc, char ** argv)
 {
   init_map();
   sf::RenderWindow* window = init_sfml();
+  window->setVerticalSyncEnabled(true);
   init_game();
   game_loop(window);
   deinitialize_game(window);
