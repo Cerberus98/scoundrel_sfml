@@ -54,7 +54,7 @@ void init_map()
   for (int i=0; i <MAP_WIDTH; ++i) {
     game_map[i] = new int[MAP_HEIGHT];
     for (int j=0; j < MAP_HEIGHT; j++) {
-      game_map[i][j] = 1;
+      game_map[i][j] = rand() % 2;
     }
   }
 }
@@ -69,7 +69,7 @@ void unload_map() {
 void dump_map() {
   for (int i=0; i < MAP_HEIGHT; ++i) {
     for (int j=0; j < MAP_WIDTH; ++j) {
-      std::cout << game_map[j] << " ";
+      std::cout << game_map[j][i] << " ";
     }
     std::cout << std::endl;
   }
@@ -87,6 +87,9 @@ void init_game()
   textures = new sf::Texture[5];
   textures[0] = load_image("grass_32.jpg");
   tiles[0].setTexture(textures[0]);
+
+  textures[1] = load_image("dirt_32.png");
+  tiles[1].setTexture(textures[1]);
 }
 
 void deinitialize_game(sf::RenderWindow* window) {
@@ -104,16 +107,16 @@ void handle_input(sf::RenderWindow* window) {
           window->close();
           break;
         case sf::Keyboard::Up:
-          camera.y -= 8;
+          camera.y -= 4;
           break;
         case sf::Keyboard::Down:
-          camera.y += 8;
+          camera.y += 4;
           break;
         case sf::Keyboard::Right:
-          camera.x += 8;
+          camera.x += 4;
           break;
         case sf::Keyboard::Left:
-          camera.x -= 8;
+          camera.x -= 4;
           break;
       }
     }
@@ -147,10 +150,14 @@ void game_loop(sf::RenderWindow* window) {
 
     for (int i=draw_start.y-1; i < draw_end.y+1; ++i) {
       Point row_coords = fromTileCoords(0, i);
+      if (i < 0 || i == MAP_WIDTH)
+        continue;
       for (int j=draw_start.x-1; j < draw_end.x+1; ++j) {
+        if (j < 0 || j == MAP_WIDTH)
+          continue;
         Point tile_world_coords = fromTileCoords(j, i);
 
-        sf::Sprite tile = tiles[0];
+        sf::Sprite tile = tiles[game_map[j][i]];
         tile.setPosition(j * TILE_WIDTH - camera.x, i * TILE_HEIGHT - camera.y);
         window->draw(tile);
       }
