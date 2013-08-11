@@ -4,7 +4,7 @@
 #include <SFML/Window.hpp>
 #include "entity.h"
 
-Entity::Entity():x(0), y(0) {
+Entity::Entity() {
   std::cout << "Entity Constructor" << std::endl;
 }
 

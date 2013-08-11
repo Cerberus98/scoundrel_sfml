@@ -4,20 +4,25 @@
 #include <SFML/Window.hpp>
 
 #include "player.h"
+#include "scoundrel_utils.h"
 
 
+const int MOVE_DELTA = 6;
 const int MAP_WIDTH = 100, MAP_HEIGHT = 100;
 const int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const int TILE_WIDTH = 32, TILE_HEIGHT = 32;
+const float CAMERA_SNAP_X = 0.2f, CAMERA_SNAP_Y = 0.15f;
+const int CAMERA_SNAP_LEFT = int(float(WINDOW_WIDTH) * CAMERA_SNAP_X);
+const int CAMERA_SNAP_RIGHT = int(float(WINDOW_WIDTH) * (1.0f - CAMERA_SNAP_X));
+const int CAMERA_SNAP_TOP = int(float(WINDOW_HEIGHT) * CAMERA_SNAP_Y);
+const int CAMERA_SNAP_BOTTOM = int(float(WINDOW_HEIGHT) * (1.0f - CAMERA_SNAP_Y));
+
 int** game_map;
 sf::Sprite* tiles;
 sf::Texture* textures;
 
-struct Point {
-  int x, y;
-};
-
 Point camera;
+Player* player;
 
 Point toTileCoords(Point pos) {
   Point tile_coords;
@@ -90,12 +95,38 @@ void init_game()
 
   textures[1] = load_image("dirt_32.png");
   tiles[1].setTexture(textures[1]);
+
+  textures[2] = load_image("player.png");
+  tiles[2].setTexture(textures[2]);
+
+  player = new Player(&tiles[2]);
+  player->move(300, 300);
 }
 
 void deinitialize_game(sf::RenderWindow* window) {
   delete window;
+  delete player;
   delete[] textures;
   delete[] tiles;
+}
+
+void check_and_move_camera() {
+  Point absolute_coords;
+  Point player_coords = player->position();
+  absolute_coords.x = player_coords.x - camera.x;
+  absolute_coords.y = player_coords.y - camera.y;
+
+  if (absolute_coords.x <= CAMERA_SNAP_LEFT) {
+    camera.x -= MOVE_DELTA;
+  } else if (absolute_coords.x >= CAMERA_SNAP_RIGHT) {
+    camera.x += MOVE_DELTA;
+  }
+
+  if (absolute_coords.y <= CAMERA_SNAP_TOP) {
+    camera.y -= MOVE_DELTA;
+  } else if (absolute_coords.y >= CAMERA_SNAP_BOTTOM) {
+    camera.y += MOVE_DELTA;
+  }
 }
 
 void handle_input(sf::RenderWindow* window) {
@@ -107,16 +138,20 @@ void handle_input(sf::RenderWindow* window) {
           window->close();
           break;
         case sf::Keyboard::Up:
-          camera.y -= 4;
+          player->move(0, -MOVE_DELTA);
+          check_and_move_camera();
           break;
         case sf::Keyboard::Down:
-          camera.y += 4;
+          player->move(0, MOVE_DELTA);
+          check_and_move_camera();
           break;
         case sf::Keyboard::Right:
-          camera.x += 4;
+          player->move(MOVE_DELTA, 0);
+          check_and_move_camera();
           break;
         case sf::Keyboard::Left:
-          camera.x -= 4;
+          player->move(-MOVE_DELTA, 0);
+          check_and_move_camera();
           break;
       }
     }
@@ -126,7 +161,6 @@ void handle_input(sf::RenderWindow* window) {
 }
 
 void game_loop(sf::RenderWindow* window) {
-  Player player;
   while (window->isOpen()) {
     //TODO: Implement a real View class/struct
     Point view;
@@ -162,7 +196,7 @@ void game_loop(sf::RenderWindow* window) {
         window->draw(tile);
       }
     }
-
+    player->draw(window, camera);
     window->display();
   }
 }
