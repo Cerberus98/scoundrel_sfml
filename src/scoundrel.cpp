@@ -7,6 +7,8 @@
 #include "scoundrel_utils.h"
 
 
+//TODO: move away from all the globals. 
+
 const int MOVE_DELTA = 6;
 const int MAP_WIDTH = 100, MAP_HEIGHT = 100;
 const int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
@@ -59,7 +61,7 @@ void init_map()
   for (int i=0; i <MAP_WIDTH; ++i) {
     game_map[i] = new int[MAP_HEIGHT];
     for (int j=0; j < MAP_HEIGHT; j++) {
-      game_map[i][j] = rand() % 2;
+      game_map[i][j] = rand() % 3;
     }
   }
 }
@@ -96,10 +98,17 @@ void init_game()
   textures[1] = load_image("dirt_32.png");
   tiles[1].setTexture(textures[1]);
 
-  textures[2] = load_image("player.png");
+  textures[2] = load_image("tree.png");
   tiles[2].setTexture(textures[2]);
 
-  player = new Player(&tiles[2]);
+  textures[3] = load_image("player.png");
+  tiles[3].setTexture(textures[3]);
+
+  //TODO Make this go away
+  Point size;
+  size.x = 32;
+  size.y = 32;
+  player = new Player(&tiles[3], size);
   player->move(300, 300);
 }
 
@@ -129,6 +138,65 @@ void check_and_move_camera() {
   }
 }
 
+void player_move_up(int delta) {
+  //TODO: Convert to using float later, and check two tiles for collision
+  Point player_coords = player->position();
+  Point player_delta;
+  player_delta.x = player_coords.x;
+  player_delta.y = player_coords.y + delta;
+
+  Point player_tile = toTileCoords(player_delta);
+  if (player_tile.y < 0 || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
+    return;
+  player->move(0, delta);
+  check_and_move_camera();
+}
+
+void player_move_down(int delta) {
+  //TODO: Convert to using float later, and check two tiles for collision
+  Point player_coords = player->position();
+  Point player_delta;
+  player_delta.x = player_coords.x;
+  player_delta.y = player_coords.y + delta;
+
+  Point player_tile = toTileCoords(player_delta);
+  if (player_tile.y > MAP_HEIGHT || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
+    return;
+  player->move(0, delta);
+  check_and_move_camera();
+}
+
+void player_move_left(int delta) {
+  //TODO: Convert to using float later, and check two tiles for collision
+  Point player_coords = player->position();
+  Point player_delta;
+  player_delta.x = player_coords.x + delta;
+  player_delta.y = player_coords.y;
+  Point player_tile = toTileCoords(player_delta);
+
+  if (player_tile.x < 0 || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
+    return;
+  player->move(delta, 0);
+  check_and_move_camera();
+}
+
+void player_move_right(int delta) {
+  //TODO: Convert to using float later, and check two tiles for collision
+  Point player_coords = player->position();
+  Point player_size = player->size();
+
+  Point player_delta;
+  player_delta.x = player_coords.x + delta;
+  player_delta.y = player_coords.y;
+
+  Point player_tile = toTileCoords(player_delta);
+  if (player_tile.x > MAP_WIDTH || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
+    return;
+
+  player->move(delta, 0);
+  check_and_move_camera();
+}
+
 void handle_input(sf::RenderWindow* window) {
   sf::Event event;
   while (window->pollEvent(event)) {
@@ -138,23 +206,20 @@ void handle_input(sf::RenderWindow* window) {
           window->close();
           break;
         case sf::Keyboard::Up:
-          player->move(0, -MOVE_DELTA);
-          check_and_move_camera();
+          player_move_up(-MOVE_DELTA);
           break;
         case sf::Keyboard::Down:
-          player->move(0, MOVE_DELTA);
-          check_and_move_camera();
+          player_move_down(MOVE_DELTA);
           break;
         case sf::Keyboard::Right:
-          player->move(MOVE_DELTA, 0);
-          check_and_move_camera();
+          player_move_right(MOVE_DELTA);
           break;
         case sf::Keyboard::Left:
-          player->move(-MOVE_DELTA, 0);
-          check_and_move_camera();
+          player_move_left(-MOVE_DELTA);
           break;
       }
     }
+
     if (event.type == sf::Event::Closed)
       window->close();
   }

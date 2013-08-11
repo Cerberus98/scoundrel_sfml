@@ -6,5 +6,11 @@ class Entity {
   public:
   Entity();
   virtual ~Entity();
-  virtual void draw(sf::RenderWindow* window, Point camera)=0;
+  virtual Point position()=0;
+  virtual Point size()=0;
+  virtual void draw(sf::RenderWindow* window);
+
+  protected:
+  Point _size;
+  Point _position;
 };

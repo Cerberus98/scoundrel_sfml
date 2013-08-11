@@ -10,5 +10,7 @@ Entity::Entity() {
 
 Entity::~Entity() {
   std::cout << "Deleting Entity" << std::endl;
+}
 
+void Entity::draw(sf::RenderWindow* window) {
 }
