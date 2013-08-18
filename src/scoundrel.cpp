@@ -5,11 +5,11 @@
 
 #include "player.h"
 #include "scoundrel_utils.h"
+#include "tile.h"
 
 
 //TODO: move away from all the globals. 
-
-const int MOVE_DELTA = 6;
+const int MOVE_DELTA = 4;
 const int MAP_WIDTH = 100, MAP_HEIGHT = 100;
 const int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const int TILE_WIDTH = 32, TILE_HEIGHT = 32;
@@ -19,8 +19,8 @@ const int CAMERA_SNAP_RIGHT = int(float(WINDOW_WIDTH) * (1.0f - CAMERA_SNAP_X));
 const int CAMERA_SNAP_TOP = int(float(WINDOW_HEIGHT) * CAMERA_SNAP_Y);
 const int CAMERA_SNAP_BOTTOM = int(float(WINDOW_HEIGHT) * (1.0f - CAMERA_SNAP_Y));
 
-int** game_map;
-sf::Sprite* tiles;
+Tile*** game_map; //OH GOD
+sf::Sprite* sprites;
 sf::Texture* textures;
 
 Point camera;
@@ -57,11 +57,11 @@ sf::Texture load_image(std::string image_path) {
 
 void init_map()
 {
-  game_map = new int*[MAP_WIDTH];
+  game_map = new Tile**[MAP_WIDTH];
   for (int i=0; i <MAP_WIDTH; ++i) {
-    game_map[i] = new int[MAP_HEIGHT];
+    game_map[i] = new Tile*[MAP_HEIGHT];
     for (int j=0; j < MAP_HEIGHT; j++) {
-      game_map[i][j] = rand() % 3;
+      game_map[i][j] = new Tile(&sprites[rand() % 3], i, j);
     }
   }
 }
@@ -90,25 +90,22 @@ sf::RenderWindow* init_sfml() {
 
 void init_game()
 {
-  tiles = new sf::Sprite[5];
+  sprites = new sf::Sprite[5];
   textures = new sf::Texture[5];
   textures[0] = load_image("grass_32.jpg");
-  tiles[0].setTexture(textures[0]);
+  sprites[0].setTexture(textures[0]);
 
   textures[1] = load_image("dirt_32.png");
-  tiles[1].setTexture(textures[1]);
+  sprites[1].setTexture(textures[1]);
 
   textures[2] = load_image("tree.png");
-  tiles[2].setTexture(textures[2]);
+  sprites[2].setTexture(textures[2]);
 
   textures[3] = load_image("player.png");
-  tiles[3].setTexture(textures[3]);
+  sprites[3].setTexture(textures[3]);
 
   //TODO Make this go away
-  Point size;
-  size.x = 32;
-  size.y = 32;
-  player = new Player(&tiles[3], size);
+  player = new Player(&sprites[3]);
   player->move(300, 300);
 }
 
@@ -116,7 +113,7 @@ void deinitialize_game(sf::RenderWindow* window) {
   delete window;
   delete player;
   delete[] textures;
-  delete[] tiles;
+  delete[] sprites;
 }
 
 void check_and_move_camera() {
@@ -146,8 +143,8 @@ void player_move_up(int delta) {
   player_delta.y = player_coords.y + delta;
 
   Point player_tile = toTileCoords(player_delta);
-  if (player_tile.y < 0 || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
-    return;
+//  if (player_tile.y < 0 || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
+//    return;
   player->move(0, delta);
   check_and_move_camera();
 }
@@ -160,8 +157,8 @@ void player_move_down(int delta) {
   player_delta.y = player_coords.y + delta;
 
   Point player_tile = toTileCoords(player_delta);
-  if (player_tile.y > MAP_HEIGHT || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
-    return;
+//  if (player_tile.y > MAP_HEIGHT || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
+//    return;
   player->move(0, delta);
   check_and_move_camera();
 }
@@ -174,8 +171,8 @@ void player_move_left(int delta) {
   player_delta.y = player_coords.y;
   Point player_tile = toTileCoords(player_delta);
 
-  if (player_tile.x < 0 || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
-    return;
+//  if (player_tile.x < 0 || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
+//    return;
   player->move(delta, 0);
   check_and_move_camera();
 }
@@ -183,15 +180,14 @@ void player_move_left(int delta) {
 void player_move_right(int delta) {
   //TODO: Convert to using float later, and check two tiles for collision
   Point player_coords = player->position();
-  Point player_size = player->size();
 
   Point player_delta;
   player_delta.x = player_coords.x + delta;
   player_delta.y = player_coords.y;
 
   Point player_tile = toTileCoords(player_delta);
-  if (player_tile.x > MAP_WIDTH || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
-    return;
+//  if (player_tile.x > MAP_WIDTH || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
+//    return;
 
   player->move(delta, 0);
   check_and_move_camera();
@@ -254,11 +250,7 @@ void game_loop(sf::RenderWindow* window) {
       for (int j=draw_start.x-1; j < draw_end.x+1; ++j) {
         if (j < 0 || j == MAP_WIDTH)
           continue;
-        Point tile_world_coords = fromTileCoords(j, i);
-
-        sf::Sprite tile = tiles[game_map[j][i]];
-        tile.setPosition(j * TILE_WIDTH - camera.x, i * TILE_HEIGHT - camera.y);
-        window->draw(tile);
+        game_map[j][i]->draw(window, Point(j * TILE_WIDTH - camera.x, i * TILE_HEIGHT - camera.y));
       }
     }
     player->draw(window, camera);
@@ -269,10 +261,10 @@ void game_loop(sf::RenderWindow* window) {
 
 int main(int argc, char ** argv)
 {
-  init_map();
   sf::RenderWindow* window = init_sfml();
   window->setVerticalSyncEnabled(true);
   init_game();
+  init_map();
   game_loop(window);
   deinitialize_game(window);
   unload_map();

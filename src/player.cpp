@@ -1,9 +1,8 @@
 #include "player.h"
 
-Player::Player(sf::Sprite* sprite, Point size) : _sprite(sprite){
+Player::Player(sf::Sprite* sprite) : _sprite(sprite){
   _position.x = 0;
   _position.y = 0;
-  _size = size;
 }
 
 
@@ -29,8 +28,4 @@ void Player::move(Point delta) {
 
 Point Player::position() {
   return _position;
-}
-
-Point Player::size() {
-  return _size;
 }

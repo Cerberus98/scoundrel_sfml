@@ -3,14 +3,12 @@
 #include "scoundrel_utils.h"
 
 class Entity {
-  public:
+public:
   Entity();
   virtual ~Entity();
   virtual Point position()=0;
-  virtual Point size()=0;
   virtual void draw(sf::RenderWindow* window);
 
-  protected:
-  Point _size;
+protected:
   Point _position;
 };
