@@ -13,6 +13,7 @@ public:
   Tile();
   Tile(sf::Sprite* sprite, int index_x, int index_y);
   void draw(sf::RenderWindow* window, Point position);
+  void set_passable(bool state);
   bool passable();
 
 private:

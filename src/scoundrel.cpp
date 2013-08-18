@@ -9,7 +9,7 @@
 
 
 //TODO: move away from all the globals. 
-const int MOVE_DELTA = 4;
+const int MOVE_DELTA = 2;
 const int MAP_WIDTH = 100, MAP_HEIGHT = 100;
 const int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const int TILE_WIDTH = 32, TILE_HEIGHT = 32;
@@ -61,7 +61,11 @@ void init_map()
   for (int i=0; i <MAP_WIDTH; ++i) {
     game_map[i] = new Tile*[MAP_HEIGHT];
     for (int j=0; j < MAP_HEIGHT; j++) {
-      game_map[i][j] = new Tile(&sprites[rand() % 3], i, j);
+      int rand_tile = rand() % 3;
+      Tile* tile = new Tile(&sprites[rand_tile], i, j);
+      if (rand_tile == 2)
+        tile->set_passable(false);
+      game_map[i][j] = tile;
     }
   }
 }
@@ -105,8 +109,7 @@ void init_game()
   sprites[3].setTexture(textures[3]);
 
   //TODO Make this go away
-  player = new Player(&sprites[3]);
-  player->move(300, 300);
+  player = new Player(&sprites[3], Point(300, 300), Rectangle(8, 4, 24, 30));
 }
 
 void deinitialize_game(sf::RenderWindow* window) {
@@ -135,59 +138,90 @@ void check_and_move_camera() {
   }
 }
 
-void player_move_up(int delta) {
-  //TODO: Convert to using float later, and check two tiles for collision
-  Point player_coords = player->position();
-  Point player_delta;
-  player_delta.x = player_coords.x;
-  player_delta.y = player_coords.y + delta;
+bool player_collide_vertical(Point left, Point right) {
+  Point player_tile_left = toTileCoords(left);
+  if (player_tile_left.y < 0 || player_tile_left.y > MAP_HEIGHT)
+    return true;
 
-  Point player_tile = toTileCoords(player_delta);
-//  if (player_tile.y < 0 || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
-//    return;
+  Point player_tile_right = toTileCoords(right);
+
+  //Generalized form. Check all tiles that touch the segment top left of the player to top right
+  for (int i = (int)player_tile_left.x; i <= (int)player_tile_right.x; ++i) {
+    if (!game_map[i][int(player_tile_left.y)]->passable())
+      return true;
+  }
+  return false;
+}
+
+bool player_collide_horizontal(Point top, Point bottom) {
+  Point player_tile_top = toTileCoords(top);
+  if (player_tile_top.x < 0 || player_tile_top.x > MAP_WIDTH)
+    return true;
+
+  Point player_tile_bottom = toTileCoords(bottom);
+
+  for (int i = (int)player_tile_top.y; i <= (int)player_tile_bottom.y; ++i) {
+    if (!game_map[int(player_tile_top.x)][i]->passable())
+      return true;
+  }
+  return false;
+}
+
+void player_move_up(int delta) {
+  Rectangle player_rect = player->get_bounding_rect();
+
+  Point player_left_coords(player_rect.left(), player_rect.top());
+  Point player_right_coords(player_rect.right(), player_rect.top());
+  Point player_delta_left(player_left_coords.x, player_left_coords.y + delta);
+  Point player_delta_right(player_right_coords.x, player_right_coords.y + delta);
+
+  if (player_collide_vertical(player_delta_left, player_delta_right))
+    return;
+
   player->move(0, delta);
   check_and_move_camera();
 }
 
 void player_move_down(int delta) {
-  //TODO: Convert to using float later, and check two tiles for collision
-  Point player_coords = player->position();
-  Point player_delta;
-  player_delta.x = player_coords.x;
-  player_delta.y = player_coords.y + delta;
+  Rectangle player_rect = player->get_bounding_rect();
 
-  Point player_tile = toTileCoords(player_delta);
-//  if (player_tile.y > MAP_HEIGHT || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
-//    return;
+  Point player_left_coords(player_rect.left(), player_rect.bottom());
+  Point player_right_coords(player_rect.right(), player_rect.bottom());
+  Point player_delta_left(player_left_coords.x, player_left_coords.y + delta);
+  Point player_delta_right(player_right_coords.x, player_right_coords.y + delta);
+
+  if (player_collide_vertical(player_delta_left, player_delta_right))
+    return;
+
   player->move(0, delta);
   check_and_move_camera();
 }
 
 void player_move_left(int delta) {
-  //TODO: Convert to using float later, and check two tiles for collision
-  Point player_coords = player->position();
-  Point player_delta;
-  player_delta.x = player_coords.x + delta;
-  player_delta.y = player_coords.y;
-  Point player_tile = toTileCoords(player_delta);
+  Rectangle player_rect = player->get_bounding_rect();
 
-//  if (player_tile.x < 0 || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
-//    return;
+  Point player_top_coords(player_rect.left(), player_rect.top());
+  Point player_bottom_coords(player_rect.left(), player_rect.bottom());
+  Point player_delta_top(player_top_coords.x, player_top_coords.y + delta);
+  Point player_delta_bottom(player_bottom_coords.x, player_bottom_coords.y + delta);
+
+  if (player_collide_horizontal(player_delta_top, player_delta_bottom))
+    return;
+
   player->move(delta, 0);
   check_and_move_camera();
 }
 
 void player_move_right(int delta) {
-  //TODO: Convert to using float later, and check two tiles for collision
-  Point player_coords = player->position();
+  Rectangle player_rect = player->get_bounding_rect();
 
-  Point player_delta;
-  player_delta.x = player_coords.x + delta;
-  player_delta.y = player_coords.y;
+  Point player_top_coords(player_rect.right(), player_rect.top());
+  Point player_bottom_coords(player_rect.right(), player_rect.bottom());
+  Point player_delta_top(player_top_coords.x, player_top_coords.y + delta);
+  Point player_delta_bottom(player_bottom_coords.x, player_bottom_coords.y + delta);
 
-  Point player_tile = toTileCoords(player_delta);
-//  if (player_tile.x > MAP_WIDTH || game_map[int(player_tile.x)][int(player_tile.y)] == 2)
-//    return;
+  if (player_collide_horizontal(player_delta_top, player_delta_bottom))
+    return;
 
   player->move(delta, 0);
   check_and_move_camera();
