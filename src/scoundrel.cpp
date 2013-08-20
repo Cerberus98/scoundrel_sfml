@@ -11,8 +11,11 @@
 //TODO: move away from all the globals. 
 const int MOVE_DELTA = 2;
 const int MAP_WIDTH = 100, MAP_HEIGHT = 100;
-const int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const int TILE_WIDTH = 32, TILE_HEIGHT = 32;
+const int FRAMERATE_LIMIT = 60;
+
+// Impleent a camera/view class
+const int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
 const float CAMERA_SNAP_X = 0.2f, CAMERA_SNAP_Y = 0.15f;
 const int CAMERA_SNAP_LEFT = int(float(WINDOW_WIDTH) * CAMERA_SNAP_X);
 const int CAMERA_SNAP_RIGHT = int(float(WINDOW_WIDTH) * (1.0f - CAMERA_SNAP_X));
@@ -25,14 +28,18 @@ sf::Texture* textures;
 
 Point camera;
 Player* player;
+KeyState key_state;
+sf::Font game_font;
+sf::Clock fps_clock;
+float framerate = 0.f;
+bool show_fps = false;
 
-struct KeyState {
-  bool left_pressed;
-  bool right_pressed;
-  bool up_pressed;
-  bool down_pressed;
-} key_state;
-
+Point toTileCoords(float x, float y) {
+  Point tile_coords;
+  tile_coords.x = x / TILE_WIDTH;
+  tile_coords.y = y / TILE_HEIGHT;
+  return tile_coords;
+}
 
 Point toTileCoords(Point pos) {
   Point tile_coords;
@@ -110,11 +117,13 @@ void init_game()
   textures[1] = load_image("dirt_32.png");
   sprites[1].setTexture(textures[1]);
 
-  textures[2] = load_image("tree.png");
+  textures[2] = load_image("rocks_32.png");
   sprites[2].setTexture(textures[2]);
 
   textures[3] = load_image("player.png");
   sprites[3].setTexture(textures[3]);
+
+  game_font.loadFromFile("mensch.ttf");
 
   //TODO Make this go away
   player = new Player(&sprites[3], Point(300, 300), Rectangle(2, 4, 24, 30));
@@ -234,7 +243,7 @@ void player_move_right(int delta) {
   check_and_move_camera();
 }
 
-void handle_input(sf::RenderWindow* window) {
+void handle_events(sf::RenderWindow* window) {
   sf::Event event;
 
   while (window->pollEvent(event)) {
@@ -254,6 +263,9 @@ void handle_input(sf::RenderWindow* window) {
       switch(event.key.code) {
         case sf::Keyboard::Escape:
           window->close();
+          break;
+        case sf::Keyboard::F:
+          show_fps = !show_fps;
           break;
       }
     } else if (event.type == sf::Event::KeyReleased) {
@@ -284,19 +296,40 @@ void handle_input(sf::RenderWindow* window) {
     player_move_down(MOVE_DELTA);
 }
 
+void handle_ai() {
+
+}
+
+void draw_ui(sf::RenderWindow* window) {
+
+}
+
+void display_framerate(sf::RenderWindow* window) {
+  //Super basic framerate calculator.
+  //
+  //TODO: Make a better one - http://gafferongames.com/game-physics/fix-your-timestep/
+  char frame_string[5];
+  int rate = (int)(1.0f / framerate);
+  sprintf(frame_string, "%d\n", rate);
+  sf::Text test_text(frame_string, game_font);
+  test_text.setPosition(100, 20);
+  window->draw(test_text);
+}
+
 void game_loop(sf::RenderWindow* window) {
   while (window->isOpen()) {
-    //TODO: Implement a real View class/struct
-    Point view;
-    view.x = camera.x + WINDOW_WIDTH;
-    view.y = camera.y + WINDOW_HEIGHT;
+    Rectangle view(camera.x, camera.y, camera.x + WINDOW_WIDTH, camera.y + WINDOW_HEIGHT);
 
-    handle_input(window);
+    handle_events(window);
+    handle_ai();
+
     window->clear(sf::Color::Black);
     Point tile_start = toTileCoords(camera);
 
-    Point draw_start = toTileCoords(camera);
-    Point draw_end = toTileCoords(view);
+    Point draw_start = toTileCoords(view.left(), view.top());
+    Point draw_end = toTileCoords(view.right(), view.bottom());
+
+    // Some basic attempts at tile clipping
     draw_start.x = draw_start.x < 0 ? 0 : draw_start.x;
     draw_start.y = draw_start.y < 0 ? 0 : draw_start.y;
     draw_start.x = draw_start.x > MAP_WIDTH ? MAP_WIDTH : draw_start.x;
@@ -317,7 +350,14 @@ void game_loop(sf::RenderWindow* window) {
       }
     }
     player->draw(window, camera);
+
+    if (show_fps) {
+      display_framerate(window);
+    }
+
+    draw_ui(window);
     window->display();
+    framerate = fps_clock.restart().asSeconds();
   }
 }
 
@@ -325,6 +365,7 @@ void game_loop(sf::RenderWindow* window) {
 int main(int argc, char ** argv)
 {
   sf::RenderWindow* window = init_sfml();
+  window->setFramerateLimit(FRAMERATE_LIMIT);
   window->setVerticalSyncEnabled(true);
   init_game();
   init_map();
