@@ -109,7 +109,7 @@ void init_game()
   sprites[3].setTexture(textures[3]);
 
   //TODO Make this go away
-  player = new Player(&sprites[3], Point(300, 300), Rectangle(8, 4, 24, 30));
+  player = new Player(&sprites[3], Point(300, 300), Rectangle(2, 4, 24, 30));
 }
 
 void deinitialize_game(sf::RenderWindow* window) {
@@ -159,7 +159,6 @@ bool player_collide_horizontal(Point top, Point bottom) {
     return true;
 
   Point player_tile_bottom = toTileCoords(bottom);
-
   for (int i = (int)player_tile_top.y; i <= (int)player_tile_bottom.y; ++i) {
     if (!game_map[int(player_tile_top.x)][i]->passable())
       return true;
@@ -202,8 +201,8 @@ void player_move_left(int delta) {
 
   Point player_top_coords(player_rect.left(), player_rect.top());
   Point player_bottom_coords(player_rect.left(), player_rect.bottom());
-  Point player_delta_top(player_top_coords.x, player_top_coords.y + delta);
-  Point player_delta_bottom(player_bottom_coords.x, player_bottom_coords.y + delta);
+  Point player_delta_top(player_top_coords.x + delta, player_top_coords.y);
+  Point player_delta_bottom(player_bottom_coords.x + delta, player_bottom_coords.y);
 
   if (player_collide_horizontal(player_delta_top, player_delta_bottom))
     return;
@@ -217,8 +216,8 @@ void player_move_right(int delta) {
 
   Point player_top_coords(player_rect.right(), player_rect.top());
   Point player_bottom_coords(player_rect.right(), player_rect.bottom());
-  Point player_delta_top(player_top_coords.x, player_top_coords.y + delta);
-  Point player_delta_bottom(player_bottom_coords.x, player_bottom_coords.y + delta);
+  Point player_delta_top(player_top_coords.x + delta, player_top_coords.y);
+  Point player_delta_bottom(player_bottom_coords.x + delta, player_bottom_coords.y);
 
   if (player_collide_horizontal(player_delta_top, player_delta_bottom))
     return;
