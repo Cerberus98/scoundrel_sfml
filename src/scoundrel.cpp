@@ -26,6 +26,14 @@ sf::Texture* textures;
 Point camera;
 Player* player;
 
+struct KeyState {
+  bool left_pressed;
+  bool right_pressed;
+  bool up_pressed;
+  bool down_pressed;
+} key_state;
+
+
 Point toTileCoords(Point pos) {
   Point tile_coords;
   tile_coords.x = pos.x / TILE_WIDTH;
@@ -228,30 +236,52 @@ void player_move_right(int delta) {
 
 void handle_input(sf::RenderWindow* window) {
   sf::Event event;
+
   while (window->pollEvent(event)) {
     if (event.type == sf::Event::KeyPressed) {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        key_state.left_pressed = true;
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        key_state.right_pressed = true;
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        key_state.up_pressed = true;
+
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        key_state.down_pressed = true;
+
       switch(event.key.code) {
         case sf::Keyboard::Escape:
           window->close();
           break;
-        case sf::Keyboard::Up:
-          player_move_up(-MOVE_DELTA);
-          break;
-        case sf::Keyboard::Down:
-          player_move_down(MOVE_DELTA);
-          break;
-        case sf::Keyboard::Right:
-          player_move_right(MOVE_DELTA);
-          break;
-        case sf::Keyboard::Left:
-          player_move_left(-MOVE_DELTA);
-          break;
       }
+    } else if (event.type == sf::Event::KeyReleased) {
+      if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+        key_state.left_pressed = false;
+
+      if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+        key_state.right_pressed = false;
+
+      if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        key_state.up_pressed = false;
+
+      if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        key_state.down_pressed = false;
     }
 
     if (event.type == sf::Event::Closed)
       window->close();
   }
+
+  if (key_state.left_pressed)
+    player_move_left(-MOVE_DELTA);
+  if (key_state.right_pressed)
+    player_move_right(MOVE_DELTA);
+  if (key_state.up_pressed)
+    player_move_up(-MOVE_DELTA);
+  if (key_state.down_pressed)
+    player_move_down(MOVE_DELTA);
 }
 
 void game_loop(sf::RenderWindow* window) {
