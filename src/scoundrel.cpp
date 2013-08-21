@@ -13,7 +13,7 @@
 #include "tile_helper.h"
 
 //TODO: move away from all the globals. 
-const int MOVE_DELTA = 2;
+const int MOVE_DELTA = 4;
 const int MAP_WIDTH = 100, MAP_HEIGHT = 100;
 const int TILE_WIDTH = 32, TILE_HEIGHT = 32;
 const int FRAMERATE_LIMIT = 60;
@@ -137,7 +137,7 @@ void check_and_move_camera() {
 
 bool player_collide_vertical(Point left, Point right) {
   Point player_tile_left = tile_helper.toTileCoords(left);
-  if (player_tile_left.y < 0 || player_tile_left.y > MAP_HEIGHT)
+  if (player_tile_left.y < 0 || player_tile_left.y >= MAP_HEIGHT)
     return true;
 
   Point player_tile_right = tile_helper.toTileCoords(right);
@@ -151,7 +151,7 @@ bool player_collide_vertical(Point left, Point right) {
 
 bool player_collide_horizontal(Point top, Point bottom) {
   Point player_tile_top = tile_helper.toTileCoords(top);
-  if (player_tile_top.x < 0 || player_tile_top.x > MAP_WIDTH)
+  if (player_tile_top.x < 0 || player_tile_top.x >= MAP_WIDTH)
     return true;
 
   Point player_tile_bottom = tile_helper.toTileCoords(bottom);
