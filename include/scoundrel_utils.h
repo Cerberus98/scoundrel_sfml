@@ -13,7 +13,5 @@ struct KeyState {
   bool down_pressed;
 };
 
-
-
 #endif
 

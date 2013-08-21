@@ -3,10 +3,14 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
+#include "config_lib/configfile.h"
+#include "config_lib/configitem.h"
+
+#include "camera.h"
 #include "player.h"
 #include "scoundrel_utils.h"
 #include "tile.h"
-
+#include "tile_helper.h"
 
 //TODO: move away from all the globals. 
 const int MOVE_DELTA = 2;
@@ -15,51 +19,29 @@ const int TILE_WIDTH = 32, TILE_HEIGHT = 32;
 const int FRAMERATE_LIMIT = 60;
 
 // Impleent a camera/view class
-const int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 600;
+int WINDOW_WIDTH, WINDOW_HEIGHT;
 const float CAMERA_SNAP_X = 0.2f, CAMERA_SNAP_Y = 0.15f;
-const int CAMERA_SNAP_LEFT = int(float(WINDOW_WIDTH) * CAMERA_SNAP_X);
-const int CAMERA_SNAP_RIGHT = int(float(WINDOW_WIDTH) * (1.0f - CAMERA_SNAP_X));
-const int CAMERA_SNAP_TOP = int(float(WINDOW_HEIGHT) * CAMERA_SNAP_Y);
-const int CAMERA_SNAP_BOTTOM = int(float(WINDOW_HEIGHT) * (1.0f - CAMERA_SNAP_Y));
 
 Tile*** game_map; //OH GOD
 sf::Sprite* sprites;
 sf::Texture* textures;
 
-Point camera;
 Player* player;
 KeyState key_state;
+Camera camera;
 sf::Font game_font;
 sf::Clock fps_clock;
 float framerate = 0.f;
 bool show_fps = false;
+TileHelper tile_helper(TILE_WIDTH, TILE_HEIGHT);
 
-Point toTileCoords(float x, float y) {
-  Point tile_coords;
-  tile_coords.x = x / TILE_WIDTH;
-  tile_coords.y = y / TILE_HEIGHT;
-  return tile_coords;
-}
-
-Point toTileCoords(Point pos) {
-  Point tile_coords;
-  tile_coords.x = pos.x / TILE_WIDTH;
-  tile_coords.y = pos.y / TILE_HEIGHT;
-  return tile_coords;
-}
-
-Point fromTileCoords(Point pos) {
-  Point world_coords;
-  world_coords.x = pos.x * TILE_WIDTH;
-  world_coords.y = pos.y * TILE_HEIGHT;
-  return world_coords;
-}
-
-Point fromTileCoords(int x, int y) {
-  Point world_coords;
-  world_coords.x = x * TILE_WIDTH;
-  world_coords.y = y * TILE_HEIGHT;
-  return world_coords;
+void load_config() {
+  configlib::configfile config("scoundrel.conf");
+  configlib::configitem<int> window_width(config, "main", "int window_width", "height=", 1024);
+  configlib::configitem<int> window_height(config, "main", "int window_height", "width=", 768);
+  config.read();
+  WINDOW_WIDTH = window_width;
+  WINDOW_HEIGHT = window_height;
 }
 
 sf::Texture load_image(std::string image_path) {
@@ -92,15 +74,6 @@ void unload_map() {
   delete[] game_map;
 }
 
-void dump_map() {
-  for (int i=0; i < MAP_HEIGHT; ++i) {
-    for (int j=0; j < MAP_WIDTH; ++j) {
-      std::cout << game_map[j][i] << " ";
-    }
-    std::cout << std::endl;
-  }
-}
-
 sf::RenderWindow* init_sfml() {
   sf::RenderWindow* game_window = new sf::RenderWindow();
   game_window->create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Scoundrel");
@@ -111,22 +84,27 @@ void init_game()
 {
   sprites = new sf::Sprite[5];
   textures = new sf::Texture[5];
-  textures[0] = load_image("grass_32.jpg");
+  textures[0] = load_image("content/grass_32.jpg");
   sprites[0].setTexture(textures[0]);
 
-  textures[1] = load_image("dirt_32.png");
+  textures[1] = load_image("content/dirt_32.png");
   sprites[1].setTexture(textures[1]);
 
-  textures[2] = load_image("rocks_32.png");
+  textures[2] = load_image("content/rocks_32.png");
   sprites[2].setTexture(textures[2]);
 
-  textures[3] = load_image("player.png");
+  textures[3] = load_image("content/player.png");
   sprites[3].setTexture(textures[3]);
 
-  game_font.loadFromFile("mensch.ttf");
+  game_font.loadFromFile("content/mensch.ttf");
 
   //TODO Make this go away
   player = new Player(&sprites[3], Point(300, 300), Rectangle(2, 4, 24, 30));
+
+  camera.set_absolute(0, 0);
+  camera.set_window_size(WINDOW_WIDTH, WINDOW_HEIGHT);
+  camera.set_window_snap(CAMERA_SNAP_X, CAMERA_SNAP_Y);
+  camera.calculate_snap();
 }
 
 void deinitialize_game(sf::RenderWindow* window) {
@@ -137,32 +115,33 @@ void deinitialize_game(sf::RenderWindow* window) {
 }
 
 void check_and_move_camera() {
-  Point absolute_coords;
   Point player_coords = player->position();
-  absolute_coords.x = player_coords.x - camera.x;
-  absolute_coords.y = player_coords.y - camera.y;
+  Camera::CAMERA_SNAP cam_snap_horz;
+  Camera::CAMERA_SNAP cam_snap_vert;
 
-  if (absolute_coords.x <= CAMERA_SNAP_LEFT) {
-    camera.x -= MOVE_DELTA;
-  } else if (absolute_coords.x >= CAMERA_SNAP_RIGHT) {
-    camera.x += MOVE_DELTA;
+  cam_snap_horz = camera.point_snap_horizontal(player_coords);
+  cam_snap_vert = camera.point_snap_vertical(player_coords);
+
+  if (cam_snap_horz == Camera::SNAP_LEFT) {
+    camera.move(-MOVE_DELTA, 0);
+  } else if (cam_snap_horz == Camera::SNAP_RIGHT) {
+    camera.move(MOVE_DELTA, 0);
   }
 
-  if (absolute_coords.y <= CAMERA_SNAP_TOP) {
-    camera.y -= MOVE_DELTA;
-  } else if (absolute_coords.y >= CAMERA_SNAP_BOTTOM) {
-    camera.y += MOVE_DELTA;
+  if (cam_snap_vert == Camera::SNAP_TOP) {
+    camera.move(0, -MOVE_DELTA);
+  } else if (cam_snap_vert == Camera::SNAP_BOTTOM) {
+    camera.move(0, MOVE_DELTA);
   }
 }
 
 bool player_collide_vertical(Point left, Point right) {
-  Point player_tile_left = toTileCoords(left);
+  Point player_tile_left = tile_helper.toTileCoords(left);
   if (player_tile_left.y < 0 || player_tile_left.y > MAP_HEIGHT)
     return true;
 
-  Point player_tile_right = toTileCoords(right);
+  Point player_tile_right = tile_helper.toTileCoords(right);
 
-  //Generalized form. Check all tiles that touch the segment top left of the player to top right
   for (int i = (int)player_tile_left.x; i <= (int)player_tile_right.x; ++i) {
     if (!game_map[i][int(player_tile_left.y)]->passable())
       return true;
@@ -171,11 +150,11 @@ bool player_collide_vertical(Point left, Point right) {
 }
 
 bool player_collide_horizontal(Point top, Point bottom) {
-  Point player_tile_top = toTileCoords(top);
+  Point player_tile_top = tile_helper.toTileCoords(top);
   if (player_tile_top.x < 0 || player_tile_top.x > MAP_WIDTH)
     return true;
 
-  Point player_tile_bottom = toTileCoords(bottom);
+  Point player_tile_bottom = tile_helper.toTileCoords(bottom);
   for (int i = (int)player_tile_top.y; i <= (int)player_tile_bottom.y; ++i) {
     if (!game_map[int(player_tile_top.x)][i]->passable())
       return true;
@@ -318,16 +297,17 @@ void display_framerate(sf::RenderWindow* window) {
 
 void game_loop(sf::RenderWindow* window) {
   while (window->isOpen()) {
-    Rectangle view(camera.x, camera.y, camera.x + WINDOW_WIDTH, camera.y + WINDOW_HEIGHT);
+    Rectangle view = camera.get_view_rect();
+    Point camera_pos = view.upper_left();
 
     handle_events(window);
     handle_ai();
 
     window->clear(sf::Color::Black);
-    Point tile_start = toTileCoords(camera);
+    Point tile_start = tile_helper.toTileCoords(camera_pos);
 
-    Point draw_start = toTileCoords(view.left(), view.top());
-    Point draw_end = toTileCoords(view.right(), view.bottom());
+    Point draw_start = tile_helper.toTileCoords(view.left(), view.top());
+    Point draw_end = tile_helper.toTileCoords(view.right(), view.bottom());
 
     // Some basic attempts at tile clipping
     draw_start.x = draw_start.x < 0 ? 0 : draw_start.x;
@@ -340,16 +320,17 @@ void game_loop(sf::RenderWindow* window) {
     draw_end.y = draw_end.y < 0 ? 0 : draw_end.y;
 
     for (int i=draw_start.y-1; i < draw_end.y+1; ++i) {
-      Point row_coords = fromTileCoords(0, i);
+      Point row_coords = tile_helper.fromTileCoords(0, i);
       if (i < 0 || i == MAP_WIDTH)
         continue;
       for (int j=draw_start.x-1; j < draw_end.x+1; ++j) {
         if (j < 0 || j == MAP_WIDTH)
           continue;
-        game_map[j][i]->draw(window, Point(j * TILE_WIDTH - camera.x, i * TILE_HEIGHT - camera.y));
+        
+        game_map[j][i]->draw(window, Point(j * TILE_WIDTH - camera_pos.x, i * TILE_HEIGHT - camera_pos.y));
       }
     }
-    player->draw(window, camera);
+    player->draw(window, camera_pos);
 
     if (show_fps) {
       display_framerate(window);
@@ -364,6 +345,7 @@ void game_loop(sf::RenderWindow* window) {
 
 int main(int argc, char ** argv)
 {
+  load_config();
   sf::RenderWindow* window = init_sfml();
   window->setFramerateLimit(FRAMERATE_LIMIT);
   window->setVerticalSyncEnabled(true);

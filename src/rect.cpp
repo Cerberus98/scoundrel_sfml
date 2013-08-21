@@ -42,6 +42,10 @@ float Rectangle::bottom() {
   return p3.y;
 }
 
+Point Rectangle::upper_left() {
+  return p1;
+}
+
 bool Rectangle::intersects(Rectangle* other) {
   //TODO: May need to return a more complex object later to designate which parts intersect
   //TODO: May also need to do actual line by line intersection as well.
