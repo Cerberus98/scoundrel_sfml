@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-I./include -lsfml-window -lsfml-system -lsfml-graphics -I./include/config_lib
+CFLAGS=-I./include -lsfml-window -lsfml-system -lsfml-graphics -lsfml-audio -I./include/config_lib
 CONFIG_LIB_FLAGS=-I./include/config_lib -c
 CONFIG_LIB_SOURCES=src/config_lib/color.cpp src/config_lib/configfile.cpp src/config_lib/configitem_base.cpp
 SOURCES=src/player.cpp src/scoundrel.cpp src/entity.cpp src/rect.cpp src/tile.cpp src/camera.cpp

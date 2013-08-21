@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 
@@ -31,6 +32,9 @@ KeyState key_state;
 Camera camera;
 sf::Font game_font;
 sf::Clock fps_clock;
+sf::SoundBuffer* sound_buffers;
+sf::Sound* sounds;
+
 float framerate = 0.f;
 bool show_fps = false;
 TileHelper tile_helper(TILE_WIDTH, TILE_HEIGHT);
@@ -80,8 +84,7 @@ sf::RenderWindow* init_sfml() {
   return game_window;
 }
 
-void init_game()
-{
+void init_graphics() {
   sprites = new sf::Sprite[5];
   textures = new sf::Texture[5];
   textures[0] = load_image("content/grass_32.jpg");
@@ -97,6 +100,19 @@ void init_game()
   sprites[3].setTexture(textures[3]);
 
   game_font.loadFromFile("content/mensch.ttf");
+}
+
+void init_audio() {
+  sound_buffers = new sf::SoundBuffer[5];
+  sounds = new sf::Sound[5];
+  sound_buffers[0].loadFromFile("content/pewpew.wav");
+  sounds[0].setBuffer(sound_buffers[0]);
+}
+
+void init_game()
+{
+  init_graphics();
+  init_audio();
 
   //TODO Make this go away
   player = new Player(&sprites[3], Point(300, 300), Rectangle(2, 4, 24, 30));
@@ -112,6 +128,8 @@ void deinitialize_game(sf::RenderWindow* window) {
   delete player;
   delete[] textures;
   delete[] sprites;
+  delete[] sound_buffers;
+  delete[] sounds;
 }
 
 void check_and_move_camera() {
@@ -332,9 +350,8 @@ void game_loop(sf::RenderWindow* window) {
     }
     player->draw(window, camera_pos);
 
-    if (show_fps) {
+    if (show_fps)
       display_framerate(window);
-    }
 
     draw_ui(window);
     window->display();
