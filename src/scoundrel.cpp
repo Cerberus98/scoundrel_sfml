@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
@@ -7,6 +8,7 @@
 #include "config_lib/configfile.h"
 #include "config_lib/configitem.h"
 
+#include "animation.h"
 #include "camera.h"
 #include "player.h"
 #include "scoundrel_utils.h"
@@ -14,7 +16,7 @@
 #include "tile_helper.h"
 
 //TODO: move away from all the globals. 
-const int MOVE_DELTA = 4;
+const int MOVE_DELTA = 2;
 const int MAP_WIDTH = 100, MAP_HEIGHT = 100;
 const int TILE_WIDTH = 32, TILE_HEIGHT = 32;
 const int FRAMERATE_LIMIT = 60;
@@ -34,6 +36,12 @@ sf::Font game_font;
 sf::Clock fps_clock;
 sf::SoundBuffer* sound_buffers;
 sf::Sound* sounds;
+
+Animation fire_animation;
+struct Fire {
+  Point position;
+};
+Fire fires[100];
 
 float framerate = 0.f;
 bool show_fps = false;
@@ -69,6 +77,13 @@ void init_map()
       game_map[i][j] = tile;
     }
   }
+
+  //Generate some fires
+  for (int i = 0; i < 100; ++i) {
+    int x = rand() % MAP_WIDTH * TILE_WIDTH;
+    int y = rand() % MAP_HEIGHT * TILE_HEIGHT;
+    fires[i].position = Point(x, y);
+  }
 }
 
 void unload_map() {
@@ -85,8 +100,8 @@ sf::RenderWindow* init_sfml() {
 }
 
 void init_graphics() {
-  sprites = new sf::Sprite[5];
-  textures = new sf::Texture[5];
+  sprites = new sf::Sprite[10];
+  textures = new sf::Texture[10];
   textures[0] = load_image("content/grass_32.jpg");
   sprites[0].setTexture(textures[0]);
 
@@ -98,6 +113,13 @@ void init_graphics() {
 
   textures[3] = load_image("content/player.png");
   sprites[3].setTexture(textures[3]);
+
+  textures[4] = load_image("content/fire_sheet.png");
+  sprites[4].setTexture(textures[4]);
+  fire_animation.set_sprite_sheet(&textures[4]);
+  fire_animation.add_frame(sf::IntRect(0, 0, 31, 31));
+  fire_animation.add_frame(sf::IntRect(33, 0, 63, 31));
+  fire_animation.set_frame(0);
 
   game_font.loadFromFile("content/mensch.ttf");
 }
@@ -173,11 +195,13 @@ bool player_collide_horizontal(Point top, Point bottom) {
     return true;
 
   Point player_tile_bottom = tile_helper.toTileCoords(bottom);
+  bool player_collision = false;
   for (int i = (int)player_tile_top.y; i <= (int)player_tile_bottom.y; ++i) {
-    if (!game_map[int(player_tile_top.x)][i]->passable())
-      return true;
+    if (!game_map[int(player_tile_top.x)][i]->passable()) {
+      player_collision = true;
+    }
   }
-  return false;
+  return player_collision;
 }
 
 void player_move_up(int delta) {
@@ -314,6 +338,7 @@ void display_framerate(sf::RenderWindow* window) {
 }
 
 void game_loop(sf::RenderWindow* window) {
+  int decay = 30;
   while (window->isOpen()) {
     Rectangle view = camera.get_view_rect();
     Point camera_pos = view.upper_left();
@@ -348,6 +373,25 @@ void game_loop(sf::RenderWindow* window) {
         game_map[j][i]->draw(window, Point(j * TILE_WIDTH - camera_pos.x, i * TILE_HEIGHT - camera_pos.y));
       }
     }
+    for (int i = 0; i < 100; ++i) {
+      Point fire = fires[i].position;
+      fire.x -= camera_pos.x;
+      fire.y -= camera_pos.y;
+      fire_animation.setPosition(fire.x, fire.y);
+      window->draw(fire_animation);
+    }
+
+    //TODO: nuke this shortly. Move into the animation class
+    decay--;
+    if (decay == 0) {
+      int cur_frame = fire_animation.get_frame();
+      if (cur_frame == 0)
+        fire_animation.set_frame(1);
+      else
+        fire_animation.set_frame(0);
+      decay = 30;
+    }
+
     player->draw(window, camera_pos);
 
     if (show_fps)
