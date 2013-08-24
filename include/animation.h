@@ -4,13 +4,8 @@
 // Inspired by https://github.com/LaurentGomila/SFML/wiki/Source%3A-AnimatedSprite
 
 #include <vector>
-#include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/PrimitiveType.hpp>
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <SFML/Graphics/Transformable.hpp>
-#include <SFML/Graphics/Vertex.hpp>
+#include <SFML/Graphics.hpp>
+
 
 class Animation : public sf::Drawable, public sf::Transformable
 {
