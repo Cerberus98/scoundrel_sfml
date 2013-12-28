@@ -19,6 +19,26 @@ int Animation::get_frame() {
   return _current_frame;
 }
 
+void Animation::set_frame_time(int frame_time) {
+  _frame_time =  frame_time;
+  _decay = frame_time;
+}
+
+int Animation::get_frame_count() {
+  return _frames.size();
+}
+
+void Animation::increment_frame() {
+  _decay--;
+  if (_decay == 0) {
+    int next_frame = _current_frame + 1;
+    if (next_frame == _frames.size())
+      next_frame = 0;
+    set_frame(next_frame);
+    _decay = _frame_time;
+  }
+}
+
 void Animation::set_frame(int frame)
 {
   _current_frame = frame;
@@ -39,6 +59,16 @@ void Animation::set_frame(int frame)
   _vertices[1].texCoords = sf::Vector2f(left, bottom);
   _vertices[2].texCoords = sf::Vector2f(right, bottom);
   _vertices[3].texCoords = sf::Vector2f(right, top);
+}
+
+void Animation::setColor(int r, int g, int b, int a) {
+  sf::Color col;
+  for (int i = 0; i < 4; ++i) {
+    _vertices[i].color.r = r;
+    _vertices[i].color.g = g;
+    _vertices[i].color.b = b;
+    _vertices[i].color.a = a;
+  }
 }
 
 void Animation::draw(sf::RenderTarget& target, sf::RenderStates states) const
