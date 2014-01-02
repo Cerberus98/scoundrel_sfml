@@ -89,17 +89,17 @@ void GameMap::draw(sf::RenderWindow* window, Point camera_pos, Point draw_start,
           brightness = illum;
       }
 
-      int from_player = get_light(i, j, player);
-      if (from_player > brightness)
-        brightness = from_player;
+      //int from_player = get_light(i, j, player);
+      //if (from_player > brightness)
+      //  brightness = from_player;
 
-      //TODO(mdietz): Configurable ambient value, set later
-      if (brightness < 80)
-        brightness = 80;
+      ////TODO(mdietz): Configurable ambient value, set later
+      //if (brightness < 80)
+      //  brightness = 80;
 
-      Animation * anim = _game_map[i][j]->get_animation();
-      if (anim)
-        anim->setColor(255, 255, 255, brightness);
+      //Animation * anim = _game_map[i][j]->get_animation();
+      //if (anim)
+      //  anim->setColor(255, 255, 255, brightness);
 
       _game_map[i][j]->draw(window, Point(i * _tile_helper->tile_width - camera_pos.x,
                                           j * _tile_helper->tile_height - camera_pos.y), 0.4f);

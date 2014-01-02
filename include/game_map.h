@@ -24,6 +24,7 @@ public:
   Tile* get_tile(int x, int y);
   void load_level(std::string proc_path, int level, Player* player, Camera* camera, std::map<int, Animation>* animation_map,
                   sf::Sound* sounds, std::list<Entity *>&game_entities);
+  void unload_level();
   void draw(sf::RenderWindow* window, Point camera_pos, Point draw_start, Point draw_end, Player* player, std::list<Entity *> game_entities);
   void clear();
   int get_width();

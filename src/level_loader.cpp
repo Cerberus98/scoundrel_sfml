@@ -78,9 +78,9 @@ Tile*** load_map(std::string level_path, Player* player, Camera* camera, std::ma
         exit_arrow->set_pickup_sound(&sounds[1]);
         game_entities.push_back(exit_arrow);
         game_map[index_x][index_y] = new Tile();
-      } else if (map_tile > 0 && map_tile <= 99) {
+      } else if (map_tile >= 0 && map_tile <= 99) {
         game_map[index_x][index_y] = new Tile(&(*animation_map)[map_tile], false);
-      }  else {
+      } else {
         game_map[index_x][index_y] = new Tile();
       }
       index_x++;

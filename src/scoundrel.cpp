@@ -1,3 +1,5 @@
+#include <fstream>
+#include <json/json.h>
 #include <iostream>
 #include <list>
 #include <map>
@@ -9,14 +11,6 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
-
-#ifndef SCOUNDREL_COMMAND_LINE
-#include "configfile.h"
-#include "configitem.h"
-#else
-#include "config_lib/configfile.h"
-#include "config_lib/configitem.h"
-#endif
 
 #include "animation.h"
 #include "battery.h"
@@ -80,21 +74,26 @@ std::string full_path(std::string file_path)
 }
 
 void load_config(int argc, char ** argv) {
-  configlib::configfile config(full_path("10second.conf"));
-  configlib::configitem<int> window_width(config, "main", "int window_width", "height=", 1024);
-  configlib::configitem<int> window_height(config, "main", "int window_height", "width=", 768);
-  configlib::configitem<int> start_level(config, "main", "int start_level", "start_level=", 1);
-  configlib::configitem<int> num_levels(config, "main", "int num_levels", "num_levels=", 1);
-  config.read();
+  Json::Value root;
+  Json::Reader reader;
+  std::ifstream scoundrel_conf;
+  scoundrel_conf.open(full_path("scoundrel.json").c_str());
 
-  // Throws abort traps, don't care why
-  // config.parse(argc, argv);
+  bool parsed = reader.parse(scoundrel_conf, root);
+  scoundrel_conf.close();
 
-  WINDOW_WIDTH = window_width;
-  WINDOW_HEIGHT = window_height;
-  game_start_level = start_level;
-  current_level = start_level;
-  total_levels = num_levels;
+  std::cout << full_path("scoundrel.json") << std::endl;
+  if (parsed) {
+    WINDOW_WIDTH = root.get("window_width", 1024).asInt();
+    WINDOW_HEIGHT = root.get("window_height", 788).asInt();
+    game_start_level = root.get("game_start_level", 0).asInt();
+    current_level = root.get("current_level", 0).asInt();
+    total_levels = root.get("total_levels", 1).asInt();
+  } else {
+    std::cout << "Unable to parse config" << std::endl;
+    std::cout << reader.getFormatedErrorMessages() << std::endl;
+    exit(1);
+  }
 }
 
 sf::Texture load_image(std::string image_path) {
@@ -123,71 +122,71 @@ void init_tile_animations() {
   animation_map[1].add_frame(sf::IntRect(32, 0, 32, 32));
   animation_map[1].set_frame(0);
 
-  //Rock 2 Tile
-  animation_map[2] = Animation();
-  animation_map[2].set_sprite_sheet(&tile_sheet);
-  animation_map[2].add_frame(sf::IntRect(64, 0, 32, 32));
-  animation_map[2].set_frame(0);
+  ////Rock 2 Tile
+  //animation_map[2] = Animation();
+  //animation_map[2].set_sprite_sheet(&tile_sheet);
+  //animation_map[2].add_frame(sf::IntRect(64, 0, 32, 32));
+  //animation_map[2].set_frame(0);
 
-  //Rock 1 Ground
-  animation_map[3] = Animation();
-  animation_map[3].set_sprite_sheet(&tile_sheet);
-  animation_map[3].add_frame(sf::IntRect(224, 0, 32, 32));
-  animation_map[3].set_frame(0);
+  ////Rock 1 Ground
+  //animation_map[3] = Animation();
+  //animation_map[3].set_sprite_sheet(&tile_sheet);
+  //animation_map[3].add_frame(sf::IntRect(224, 0, 32, 32));
+  //animation_map[3].set_frame(0);
 
-  //Dead Grass
-  animation_map[4] = Animation();
-  animation_map[4].set_sprite_sheet(&tile_sheet);
-  animation_map[4].add_frame(sf::IntRect(0, 0, 32, 32));
-  animation_map[4].set_frame(0);
+  ////Dead Grass
+  //animation_map[4] = Animation();
+  //animation_map[4].set_sprite_sheet(&tile_sheet);
+  //animation_map[4].add_frame(sf::IntRect(0, 0, 32, 32));
+  //animation_map[4].set_frame(0);
 
-  //Gray Rock 1
-  animation_map[5] = Animation();
-  animation_map[5].set_sprite_sheet(&tile_sheet);
-  animation_map[5].add_frame(sf::IntRect(96, 0, 32, 32));
-  animation_map[5].set_frame(0);
+  ////Gray Rock 1
+  //animation_map[5] = Animation();
+  //animation_map[5].set_sprite_sheet(&tile_sheet);
+  //animation_map[5].add_frame(sf::IntRect(96, 0, 32, 32));
+  //animation_map[5].set_frame(0);
 
-  //Gray Rock 2
-  animation_map[6] = Animation();
-  animation_map[6].set_sprite_sheet(&tile_sheet);
-  animation_map[6].add_frame(sf::IntRect(128, 0, 32, 32));
-  animation_map[6].set_frame(0);
+  ////Gray Rock 2
+  //animation_map[6] = Animation();
+  //animation_map[6].set_sprite_sheet(&tile_sheet);
+  //animation_map[6].add_frame(sf::IntRect(128, 0, 32, 32));
+  //animation_map[6].set_frame(0);
 
-  //Gray Rock Ground 1
-  animation_map[7] = Animation();
-  animation_map[7].set_sprite_sheet(&tile_sheet);
-  animation_map[7].add_frame(sf::IntRect(288, 0, 32, 32));
-  animation_map[7].set_frame(0);
+  ////Gray Rock Ground 1
+  //animation_map[7] = Animation();
+  //animation_map[7].set_sprite_sheet(&tile_sheet);
+  //animation_map[7].add_frame(sf::IntRect(288, 0, 32, 32));
+  //animation_map[7].set_frame(0);
 
-  //Brown Spikes
-  animation_map[100] = Animation();
-  animation_map[100].set_sprite_sheet(&tile_sheet);
-  animation_map[100].add_frame(sf::IntRect(160, 0, 32, 32));
-  animation_map[100].set_frame(0);
+  ////Brown Spikes
+  //animation_map[100] = Animation();
+  //animation_map[100].set_sprite_sheet(&tile_sheet);
+  //animation_map[100].add_frame(sf::IntRect(160, 0, 32, 32));
+  //animation_map[100].set_frame(0);
 
-  //Ceiling Brown Spikes
-  animation_map[101] = Animation();
-  animation_map[101].set_sprite_sheet(&tile_sheet);
-  animation_map[101].add_frame(sf::IntRect(0, 96, 32, 32));
-  animation_map[101].set_frame(0);
+  ////Ceiling Brown Spikes
+  //animation_map[101] = Animation();
+  //animation_map[101].set_sprite_sheet(&tile_sheet);
+  //animation_map[101].add_frame(sf::IntRect(0, 96, 32, 32));
+  //animation_map[101].set_frame(0);
 
-  //Right Facing Brown Spikes
-  animation_map[102] = Animation();
-  animation_map[102].set_sprite_sheet(&tile_sheet);
-  animation_map[102].add_frame(sf::IntRect(32, 96, 32, 32));
-  animation_map[102].set_frame(0);
+  ////Right Facing Brown Spikes
+  //animation_map[102] = Animation();
+  //animation_map[102].set_sprite_sheet(&tile_sheet);
+  //animation_map[102].add_frame(sf::IntRect(32, 96, 32, 32));
+  //animation_map[102].set_frame(0);
 
-  //left Facing Brown Spikes
-  animation_map[103] = Animation();
-  animation_map[103].set_sprite_sheet(&tile_sheet);
-  animation_map[103].add_frame(sf::IntRect(64, 96, 32, 32));
-  animation_map[103].set_frame(0);
+  ////left Facing Brown Spikes
+  //animation_map[103] = Animation();
+  //animation_map[103].set_sprite_sheet(&tile_sheet);
+  //animation_map[103].add_frame(sf::IntRect(64, 96, 32, 32));
+  //animation_map[103].set_frame(0);
 
-  //Floor Gray Spikes
-  animation_map[104] = Animation();
-  animation_map[104].set_sprite_sheet(&tile_sheet);
-  animation_map[104].add_frame(sf::IntRect(192, 0, 32, 32));
-  animation_map[104].set_frame(0);
+  ////Floor Gray Spikes
+  //animation_map[104] = Animation();
+  //animation_map[104].set_sprite_sheet(&tile_sheet);
+  //animation_map[104].add_frame(sf::IntRect(192, 0, 32, 32));
+  //animation_map[104].set_frame(0);
 
   //Player walk left
   animation_map[300] = Animation();
@@ -221,35 +220,41 @@ void init_tile_animations() {
   animation_map[303].add_frame(sf::IntRect(0, 32, 32, 32));
   animation_map[303].set_frame(0);
 
-  //Battery
-  animation_map[304] = Animation();
-  animation_map[304].set_sprite_sheet(&tile_sheet);
-  animation_map[304].add_frame(sf::IntRect(352, 0, 32, 32));
-  animation_map[304].add_frame(sf::IntRect(384, 0, 32, 32));
-  animation_map[304].add_frame(sf::IntRect(416, 0, 32, 32));
-  animation_map[304].add_frame(sf::IntRect(384, 0, 32, 32));
-  animation_map[304].set_frame_time(5);
-  animation_map[304].set_frame(0);
+  ////Battery
+  //animation_map[304] = Animation();
+  //animation_map[304].set_sprite_sheet(&tile_sheet);
+  //animation_map[304].add_frame(sf::IntRect(352, 0, 32, 32));
+  //animation_map[304].add_frame(sf::IntRect(384, 0, 32, 32));
+  //animation_map[304].add_frame(sf::IntRect(416, 0, 32, 32));
+  //animation_map[304].add_frame(sf::IntRect(384, 0, 32, 32));
+  //animation_map[304].set_frame_time(5);
+  //animation_map[304].set_frame(0);
 
-  //Exit Arrow
-  animation_map[305] = Animation();
-  animation_map[305].set_sprite_sheet(&tile_sheet);
-  animation_map[305].add_frame(sf::IntRect(0, 64, 32, 32));
-  animation_map[305].add_frame(sf::IntRect(32, 64, 32, 32));
-  animation_map[305].add_frame(sf::IntRect(64, 64, 32, 32));
-  animation_map[305].add_frame(sf::IntRect(96, 64, 32, 32));
-  animation_map[305].set_frame_time(5);
-  animation_map[305].set_frame(0);
+  ////Exit Arrow
+  //animation_map[305] = Animation();
+  //animation_map[305].set_sprite_sheet(&tile_sheet);
+  //animation_map[305].add_frame(sf::IntRect(0, 64, 32, 32));
+  //animation_map[305].add_frame(sf::IntRect(32, 64, 32, 32));
+  //animation_map[305].add_frame(sf::IntRect(64, 64, 32, 32));
+  //animation_map[305].add_frame(sf::IntRect(96, 64, 32, 32));
+  //animation_map[305].set_frame_time(5);
+  //animation_map[305].set_frame(0);
 
-  //Radio
-  animation_map[306] = Animation();
-  animation_map[306].set_sprite_sheet(&tile_sheet);
-  animation_map[306].add_frame(sf::IntRect(0, 128, 32, 32));
-  animation_map[306].add_frame(sf::IntRect(32, 128, 32, 32));
-  animation_map[306].add_frame(sf::IntRect(64, 128, 32, 32));
-  animation_map[306].add_frame(sf::IntRect(32, 128, 32, 32));
-  animation_map[306].set_frame_time(5);
-  animation_map[306].set_frame(0);
+  ////Radio
+  //animation_map[306] = Animation();
+  //animation_map[306].set_sprite_sheet(&tile_sheet);
+  //animation_map[306].add_frame(sf::IntRect(0, 128, 32, 32));
+  //animation_map[306].add_frame(sf::IntRect(32, 128, 32, 32));
+  //animation_map[306].add_frame(sf::IntRect(64, 128, 32, 32));
+  //animation_map[306].add_frame(sf::IntRect(32, 128, 32, 32));
+  //animation_map[306].set_frame_time(5);
+  //animation_map[306].set_frame(0);
+  
+  ////Grass
+  animation_map[0] = Animation();
+  animation_map[0].set_sprite_sheet(&tile_sheet);
+  animation_map[0].add_frame(sf::IntRect(0, 192, 32, 32));
+  animation_map[0].set_frame(0);
 
 }
 
@@ -553,38 +558,38 @@ void player_move_map_down(float delta) {
 }
 
 void player_move() {
-  if (game_mode == GAME_PLAY) {
-    player->fall();
-    sf::Vector2f player_move = player->get_movement();
+  //if (game_mode == GAME_PLAY) {
+  //  player->fall();
+  //  sf::Vector2f player_move = player->get_movement();
 
-    if (player_move.x > 0)
-      player_move_right(player_move.x);
-    else if (player_move.x < 0)
-      player_move_left(player_move.x);
+  //  if (player_move.x > 0)
+  //    player_move_right(player_move.x);
+  //  else if (player_move.x < 0)
+  //    player_move_left(player_move.x);
 
-    if (player_move.y > 0)
-      player_move_down(player_move.y);
-    else if (player_move.y < 0)
-      player_move_up(player_move.y);
+  //  if (player_move.y > 0)
+  //    player_move_down(player_move.y);
+  //  else if (player_move.y < 0)
+  //    player_move_up(player_move.y);
 
-    player_move = player->get_movement();
-    if (player_move.x == 0.f && player_move.y == 0.f)
-      player->set_state(ENTITY_STANDING);
-    if (player_move.y != 0.f)
-      player->set_state(ENTITY_JUMPING); //technically falling
-    player->move(Point(player_move.x, player_move.y));
-  } else if (game_mode == GAME_MAP_EDIT) {
-    sf::Vector2f player_move = player->get_movement();
-    if (key_state.right_pressed)
-      player_move_map_right(player_move.x);
-    else if (key_state.left_pressed)
-      player_move_map_left(player_move.x);
+  //  player_move = player->get_movement();
+  //  if (player_move.x == 0.f && player_move.y == 0.f)
+  //    player->set_state(ENTITY_STANDING);
+  //  if (player_move.y != 0.f)
+  //    player->set_state(ENTITY_JUMPING); //technically falling
+  //  player->move(Point(player_move.x, player_move.y));
+  //} else if (game_mode == GAME_MAP_EDIT) {
+  sf::Vector2f player_move = player->get_movement();
+  if (key_state.right_pressed)
+    player_move_map_right(player_move.x);
+  else if (key_state.left_pressed)
+    player_move_map_left(player_move.x);
 
-    if (key_state.up_pressed)
-      player_move_map_up(player_move.y);
-    else if (key_state.down_pressed)
-      player_move_map_down(player_move.y);
-  }
+  if (key_state.up_pressed)
+    player_move_map_up(player_move.y);
+  else if (key_state.down_pressed)
+    player_move_map_down(player_move.y);
+  //}
 }
 
 void handle_events(sf::RenderWindow* window) {
@@ -660,25 +665,25 @@ void handle_events(sf::RenderWindow* window) {
     player->walk_left();
   if (key_state.right_pressed)
     player->walk_right();
-  if (game_mode == GAME_MAP_EDIT) {
-    if (key_state.up_pressed)
-      player->float_up();
-    if (key_state.down_pressed)
-      player->float_down();
-    if (!key_state.up_pressed && !key_state.down_pressed) {
-      player->stop_floating();
-    }
+  //if (game_mode == GAME_MAP_EDIT) {
+  if (key_state.up_pressed)
+    player->float_up();
+  if (key_state.down_pressed)
+    player->float_down();
+  if (!key_state.up_pressed && !key_state.down_pressed) {
+    player->stop_floating();
   }
+  //}
 
-  if (game_mode == GAME_PLAY) {
-    if (key_state.space_pressed && !key_state.space_was_pressed) {
-      sounds[0].play();
-      player->jump();
-      key_state.space_was_pressed = true;
-    }
-  } else if (game_mode == GAME_MAP_EDIT) {
-    // Set tile
-  }
+  //if (game_mode == GAME_PLAY) {
+  //  if (key_state.space_pressed && !key_state.space_was_pressed) {
+  //    sounds[0].play();
+  //    player->jump();
+  //    key_state.space_was_pressed = true;
+  //  }
+  //} else if (game_mode == GAME_MAP_EDIT) {
+  //  // Set tile
+  //}
 
   if (!key_state.left_pressed && !key_state.right_pressed) {
     player->stop_walking();
@@ -791,26 +796,27 @@ void game_loop(sf::RenderWindow* window) {
   while (window->isOpen()) {
     window->clear(sf::Color::Black);
     handle_events(window);
-    if (game_mode == GAME_END) {
-      draw_gameover(window);
-    } else if (game_mode == GAME_WIN) {
-      draw_win_screen(window);
-    } else if (game_mode == GAME_NEXT_LEVEL) {
-      draw_next_level_screen(window);
-      framerate = fps_clock.restart().asSeconds();
-    } else if (game_mode == GAME_PLAY || game_mode == GAME_MAP_EDIT) {
+    //if (game_mode == GAME_END) {
+    //  draw_gameover(window);
+    //} else if (game_mode == GAME_WIN) {
+    //  draw_win_screen(window);
+    //} else if (game_mode == GAME_NEXT_LEVEL) {
+    //  draw_next_level_screen(window);
+    //  framerate = fps_clock.restart().asSeconds();
+    //} else 
+    if (game_mode == GAME_PLAY || game_mode == GAME_MAP_EDIT) {
       Rectangle view = camera.get_view_rect();
       Point camera_pos = view.upper_left();
 
       player_move();
-      if (game_mode == GAME_PLAY)
-        collide_objects();
+      //if (game_mode == GAME_PLAY)
+      collide_objects();
 
-      if (!player->is_alive()) {
-        sounds[2].play();
-        game_mode = GAME_END;
-        continue;
-      }
+      //if (!player->is_alive()) {
+      //  sounds[2].play();
+      //  game_mode = GAME_END;
+      //  continue;
+      //}
 
       check_and_move_camera();
 
@@ -842,7 +848,7 @@ void game_loop(sf::RenderWindow* window) {
 
       if (show_fps)
         display_framerate(window);
-      draw_clock(window);
+      //draw_clock(window);
 
       if (game_mode == GAME_PLAY) {
         framerate = fps_clock.restart().asSeconds();
