@@ -52,7 +52,6 @@ KeyState key_state;
 Camera camera;
 sf::Font game_font;
 sf::Clock fps_clock, game_clock;
-float game_time;
 sf::SoundBuffer* sound_buffers;
 sf::Sound* sounds;
 std::map<int, Animation> animation_map;
@@ -270,14 +269,14 @@ void init_graphics() {
 void init_audio() {
   sound_buffers = new sf::SoundBuffer[5];
   sounds = new sf::Sound[5];
-  sound_buffers[0].loadFromFile(full_path("jump.wav"));
-  sounds[0].setBuffer(sound_buffers[0]);
+  //sound_buffers[0].loadFromFile(full_path("jump.wav"));
+  //sounds[0].setBuffer(sound_buffers[0]);
 
-  sound_buffers[1].loadFromFile(full_path("battery.wav"));
-  sounds[1].setBuffer(sound_buffers[1]);
+  //sound_buffers[1].loadFromFile(full_path("battery.wav"));
+  //sounds[1].setBuffer(sound_buffers[1]);
 
-  sound_buffers[2].loadFromFile(full_path("death.wav"));
-  sounds[2].setBuffer(sound_buffers[2]);
+  //sound_buffers[2].loadFromFile(full_path("death.wav"));
+  //sounds[2].setBuffer(sound_buffers[2]);
 }
 
 void clear_game_entities() {
@@ -291,11 +290,10 @@ void reset_game(bool hard=false) {
   if (hard)
     current_level = game_start_level;
 
-  game_time = 10.f;
   player->set_alive();
   player->reset();
   clear_game_entities();
-  game_mode = GAME_NEXT_LEVEL;
+  game_mode = GAME_PLAY;
   game_map->load_level(proc_path, current_level, player, &camera, &animation_map, sounds, game_entities);
   player->walk_right();
   framerate = fps_clock.restart().asSeconds();
@@ -318,8 +316,6 @@ void init_game()
   camera.set_window_size(WINDOW_WIDTH, WINDOW_HEIGHT);
   camera.set_window_snap(CAMERA_SNAP_X, CAMERA_SNAP_Y);
   camera.calculate_snap();
-
-  game_time = 10.f;
 
   game_map = new GameMap(&tile_helper);
   reset_game();
@@ -705,14 +701,6 @@ void display_framerate(sf::RenderWindow* window) {
   window->draw(test_text);
 }
 
-void draw_clock(sf::RenderWindow* window) {
-  char frame_string[20];
-  sprintf(frame_string, "%f", game_time);
-  sf::Text test_text(frame_string, game_font);
-  test_text.setPosition(WINDOW_WIDTH / 2, 20);
-  window->draw(test_text);
-}
-
 void draw_gameover(sf::RenderWindow* window) {
   sf::Text gameover_text("GAME OVER", game_font);
   gameover_text.setCharacterSize(72);
@@ -771,7 +759,7 @@ void collide_objects() {
 
       // In a better world, I'd pass in a complete game context object that can be updated
       int cur_lev = current_level;
-      dynamic_cast<Collidable *>(game_entity)->perform_collision_action(player, game_time, current_level);
+      dynamic_cast<Collidable *>(game_entity)->perform_collision_action(player, current_level);
       if (!game_entity->is_alive()) {
         delete *it;
         game_entities.erase(it);
@@ -852,10 +840,6 @@ void game_loop(sf::RenderWindow* window) {
 
       if (game_mode == GAME_PLAY) {
         framerate = fps_clock.restart().asSeconds();
-        game_time -= framerate;
-        if (game_time <= 0.f) {
-          player->kill();
-        }
       }
     }
     window->display();

@@ -15,7 +15,7 @@ void ExitArrow::set_pickup_sound(sf::Sound* sound) {
   _pickup_sound = sound;
 }
 
-void ExitArrow::perform_collision_action(Player* player, float& game_time, int& current_level) {
+void ExitArrow::perform_collision_action(Player* player, int& current_level) {
   _pickup_sound->play();
   current_level++;
   kill();

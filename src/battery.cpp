@@ -17,8 +17,7 @@ void Battery::set_pickup_sound(sf::Sound* sound) {
   _pickup_sound = sound;
 }
 
-void Battery::perform_collision_action(Player* player, float& game_time, int& current_level) {
-  game_time += 10.0f;
+void Battery::perform_collision_action(Player* player, int& current_level) {
   _pickup_sound->play();
   kill();
 }
