@@ -15,7 +15,7 @@ void GameMap::load_level(std::string proc_path, int level, Player* player, Camer
   std::stringstream map_stream;
   map_stream << proc_path << "/level" << level;
   map_path = map_stream.str();
-  _game_map = load_map(map_path, player, camera, animation_map, sounds, game_entities, _tile_helper, _width, _height);
+  _game_map = load_map(map_path, player, camera, animation_map, sounds, game_entities, _tile_helper, _width, _height, _ambient_light);
 }
 
 Tile* GameMap::get_tile(int x, int y) {
@@ -82,6 +82,7 @@ void GameMap::draw(sf::RenderWindow* window, Point camera_pos, Point draw_start,
 
       int brightness = 0;
       int illum = 0;
+
       // Get the light values for the tile
       for (std::list<Entity *>::iterator it=game_entities.begin(); it != game_entities.end(); ++it) {
         illum = get_light(i, j, (*it));
@@ -89,17 +90,15 @@ void GameMap::draw(sf::RenderWindow* window, Point camera_pos, Point draw_start,
           brightness = illum;
       }
 
-      //int from_player = get_light(i, j, player);
-      //if (from_player > brightness)
-      //  brightness = from_player;
+      int from_player = get_light(i, j, player);
+      if (from_player > brightness)
+        brightness = from_player;
 
-      ////TODO(mdietz): Configurable ambient value, set later
-      //if (brightness < 80)
-      //  brightness = 80;
+      brightness = brightness < _ambient_light ? _ambient_light : brightness;
 
-      //Animation * anim = _game_map[i][j]->get_animation();
-      //if (anim)
-      //  anim->setColor(255, 255, 255, brightness);
+      Animation * anim = _game_map[i][j]->get_animation();
+      if (anim)
+        anim->setColor(255, 255, 255, brightness);
 
       _game_map[i][j]->draw(window, Point(i * _tile_helper->tile_width - camera_pos.x,
                                           j * _tile_helper->tile_height - camera_pos.y), 0.4f);

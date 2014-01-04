@@ -32,6 +32,7 @@ public:
 private:
   int get_light(int x, int y, Entity* entity);
   int _width, _height;
+  int _ambient_light;
   TileHelper* _tile_helper;
   Tile*** _game_map;
 };

@@ -27,7 +27,7 @@ enum game_modes {GAME_PLAY, GAME_END, GAME_WIN, GAME_NEXT_LEVEL, GAME_MAP_EDIT};
 //TODO: move away from all the globals.
 const float WALK = 0.25f;
 const float MAX_WALK = 4.f;
-const float WALK_STOP = 1.2f;
+const float WALK_STOP = 4.f;
 const int MOVE_DELTA = MAX_WALK;
 const float JUMP_SPEED = -18.5f;
 
@@ -791,7 +791,7 @@ void game_loop(sf::RenderWindow* window) {
     //} else if (game_mode == GAME_NEXT_LEVEL) {
     //  draw_next_level_screen(window);
     //  framerate = fps_clock.restart().asSeconds();
-    //} else 
+    //} else
     if (game_mode == GAME_PLAY || game_mode == GAME_MAP_EDIT) {
       Rectangle view = camera.get_view_rect();
       Point camera_pos = view.upper_left();
