@@ -7,7 +7,8 @@
   {
     "Name": "Some Map",
     "Assets": [
-      {"Name": "Grass", "Type": "Tile", "Blocking": false, "Index": 0},
+      {"Name": "Grass", "Type": "Tile", "Blocking": false, "Index": 0, "path": "tile_sheet.png",
+       "frames": [(0, 0, 32, 32)]},
       {"Name": "Rock", "Type": "Tile", "Blocking": true, "Index": 1},
       {"Name": "Goblin", "Type": "Actor", "Spawn_Type": "Dynamic", "Spawn_frequency": 0.4,
        "actor_index": 0, "spawns_near": [(0, 1), (1,1)]},
@@ -17,7 +18,7 @@
     "Actors": [
       {"name": "goblin", "type": "monster", "monster_index": 25}
     ],
-    {"areas": [
+    {"areas": [ # May need to subdivide into cell/chunk for memory constraints. Could be done manually, too
       {"name": "forest_start", "ambient": 255, "index": 0, "Width": 300, "Height": 200,
        "data": [0,1,1,1....]}
       {"name": "old cottage", "ambient": 240, "index": 1, "width": 50, "height": 50,
