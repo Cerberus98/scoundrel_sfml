@@ -28,7 +28,7 @@
   }
  * */
 
-Tile*** load_map(std::string level_path, Player* player, Camera* camera, std::map<int, Animation>* animation_map,
+Tile*** LevelLoader::load_map(std::string level_path, Player* player, Camera* camera, std::map<int, Animation>* animation_map,
                  sf::Sound* sounds, std::list<Entity *>& game_entities, TileHelper* tile_helper,
                  int& map_width, int& map_height, int& ambient_light) {
   //I don't remember how to do this well, so...
