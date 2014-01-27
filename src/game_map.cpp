@@ -15,7 +15,7 @@ void GameMap::load_level(std::string proc_path, int level, Player* player, Camer
   std::stringstream map_stream;
   map_stream << proc_path << "/level" << level;
   map_path = map_stream.str();
-  _game_map = JsonLevelLoader::load_map(map_path, player, camera, animation_map, sounds, game_entities, _tile_helper, _width, _height, _ambient_light);
+  _game_map = load_map(map_path, player, camera, animation_map, sounds, game_entities, _tile_helper, _width, _height, _ambient_light);
 }
 
 Tile* GameMap::get_tile(int x, int y) {

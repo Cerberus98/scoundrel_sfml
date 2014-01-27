@@ -12,7 +12,7 @@
 #include <SFML/Window.hpp>
 
 #include "animation.h"
-#include "json_level_loader.h"
+#include "level_loader.h"
 #include "player.h"
 #include "tile.h"
 #include "tile_helper.h"
