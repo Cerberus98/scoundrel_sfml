@@ -15,6 +15,7 @@
 #include "animation.h"
 #include "battery.h"
 #include "collidable.h"
+#include "core.h"
 #include "camera.h"
 #include "game_map.h"
 #include "player.h"
@@ -554,27 +555,6 @@ void player_move_map_down(float delta) {
 }
 
 void player_move() {
-  //if (game_mode == GAME_PLAY) {
-  //  player->fall();
-  //  sf::Vector2f player_move = player->get_movement();
-
-  //  if (player_move.x > 0)
-  //    player_move_right(player_move.x);
-  //  else if (player_move.x < 0)
-  //    player_move_left(player_move.x);
-
-  //  if (player_move.y > 0)
-  //    player_move_down(player_move.y);
-  //  else if (player_move.y < 0)
-  //    player_move_up(player_move.y);
-
-  //  player_move = player->get_movement();
-  //  if (player_move.x == 0.f && player_move.y == 0.f)
-  //    player->set_state(ENTITY_STANDING);
-  //  if (player_move.y != 0.f)
-  //    player->set_state(ENTITY_JUMPING); //technically falling
-  //  player->move(Point(player_move.x, player_move.y));
-  //} else if (game_mode == GAME_MAP_EDIT) {
   sf::Vector2f player_move = player->get_movement();
   if (key_state.right_pressed)
     player_move_map_right(player_move.x);
@@ -661,7 +641,6 @@ void handle_events(sf::RenderWindow* window) {
     player->walk_left();
   if (key_state.right_pressed)
     player->walk_right();
-  //if (game_mode == GAME_MAP_EDIT) {
   if (key_state.up_pressed)
     player->float_up();
   if (key_state.down_pressed)
@@ -669,25 +648,12 @@ void handle_events(sf::RenderWindow* window) {
   if (!key_state.up_pressed && !key_state.down_pressed) {
     player->stop_floating();
   }
-  //}
-
-  //if (game_mode == GAME_PLAY) {
-  //  if (key_state.space_pressed && !key_state.space_was_pressed) {
-  //    sounds[0].play();
-  //    player->jump();
-  //    key_state.space_was_pressed = true;
-  //  }
-  //} else if (game_mode == GAME_MAP_EDIT) {
-  //  // Set tile
-  //}
 
   if (!key_state.left_pressed && !key_state.right_pressed) {
     player->stop_walking();
   }
   
 }
-
-
 
 void display_framerate(sf::RenderWindow* window) {
   //Super basic framerate calculator.
@@ -699,54 +665,6 @@ void display_framerate(sf::RenderWindow* window) {
   sf::Text test_text(frame_string, game_font);
   test_text.setPosition(100, 20);
   window->draw(test_text);
-}
-
-void draw_gameover(sf::RenderWindow* window) {
-  sf::Text gameover_text("GAME OVER", game_font);
-  gameover_text.setCharacterSize(72);
-  gameover_text.setPosition(WINDOW_WIDTH / 2 - 200, WINDOW_HEIGHT / 2);
-  window->draw(gameover_text);
-
-  sf::Text replay_text("Press SPACE BAR to play again", game_font);
-  replay_text.setCharacterSize(36);
-  replay_text.setPosition((WINDOW_WIDTH / 2) - 315, (WINDOW_HEIGHT / 2) + 100);
-  window->draw(replay_text);
-}
-
-void draw_win_screen(sf::RenderWindow* window) {
-  sf::Text win_text("YOU WIN", game_font);
-  win_text.setCharacterSize(72);
-  win_text.setPosition(WINDOW_WIDTH / 2 - 180, WINDOW_HEIGHT / 2);
-  window->draw(win_text);
-
-  sf::Text replay_text("Press SPACE BAR to play again", game_font);
-  replay_text.setCharacterSize(36);
-  replay_text.setPosition(WINDOW_WIDTH / 2 - 315, (WINDOW_HEIGHT / 2) + 100);
-  window->draw(replay_text);
-}
-
-void draw_next_level_screen(sf::RenderWindow* window) {
-  char level_string[100];
-  int offset = 100;
-
-  sprintf(level_string, "Level %d", current_level);
-  sf::Text next_level_text(level_string, game_font);
-  next_level_text.setCharacterSize(72);
-  next_level_text.setPosition(WINDOW_WIDTH / 2 - 180, WINDOW_HEIGHT / 2);
-  window->draw(next_level_text);
-
-  if (current_level == total_levels) {
-    sf::Text final_text("FINAL LEVEL", game_font);
-    final_text.setCharacterSize(72);
-    final_text.setPosition(WINDOW_WIDTH / 2 - 230, (WINDOW_HEIGHT / 2) + offset);
-    window->draw(final_text);
-    offset = 200;
-  }
-
-  sf::Text play_text("Press SPACE BAR to play", game_font);
-  play_text.setCharacterSize(36);
-  play_text.setPosition(WINDOW_WIDTH / 2 - 250, (WINDOW_HEIGHT / 2) + offset);
-  window->draw(play_text);
 }
 
 void collide_objects() {
@@ -784,27 +702,13 @@ void game_loop(sf::RenderWindow* window) {
   while (window->isOpen()) {
     window->clear(sf::Color::Black);
     handle_events(window);
-    //if (game_mode == GAME_END) {
-    //  draw_gameover(window);
-    //} else if (game_mode == GAME_WIN) {
-    //  draw_win_screen(window);
-    //} else if (game_mode == GAME_NEXT_LEVEL) {
-    //  draw_next_level_screen(window);
-    //  framerate = fps_clock.restart().asSeconds();
-    //} else
+
     if (game_mode == GAME_PLAY || game_mode == GAME_MAP_EDIT) {
       Rectangle view = camera.get_view_rect();
       Point camera_pos = view.upper_left();
 
       player_move();
-      //if (game_mode == GAME_PLAY)
       collide_objects();
-
-      //if (!player->is_alive()) {
-      //  sounds[2].play();
-      //  game_mode = GAME_END;
-      //  continue;
-      //}
 
       check_and_move_camera();
 
@@ -813,7 +717,6 @@ void game_loop(sf::RenderWindow* window) {
       Point draw_start = tile_helper.toTileCoords(view.left(), view.top());
       Point draw_end = tile_helper.toTileCoords(view.right(), view.bottom());
 
-      // Some basic attempts at tile clipping
       int map_width = game_map->get_width();
       int map_height = game_map->get_height();
 
@@ -836,7 +739,6 @@ void game_loop(sf::RenderWindow* window) {
 
       if (show_fps)
         display_framerate(window);
-      //draw_clock(window);
 
       if (game_mode == GAME_PLAY) {
         framerate = fps_clock.restart().asSeconds();

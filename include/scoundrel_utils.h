@@ -6,6 +6,8 @@ struct Point {
   Point(float x, float y): x(x), y(y) {}
 };
 
+typedef Point Size;
+
 struct KeyState {
   bool left_pressed;
   bool right_pressed;
