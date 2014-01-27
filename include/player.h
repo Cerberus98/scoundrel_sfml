@@ -12,59 +12,60 @@
 #ifndef SCOUNDREL_PLAYER
 #define SCOUNDREL_PLAYER
 
-class Player : public Entity {
+namespace Scoundrel {
+  class Player : public Entity {
 
-public:
-  ~Player();
-  Player(sf::Sprite * sprite, Point position, Rectangle bounding_rect);
-  void draw(sf::RenderWindow * window, Point camera);
-  void move(int x, int y);
+  public:
+    ~Player();
+    Player(sf::Sprite * sprite, Point position, Rectangle bounding_rect);
+    void draw(sf::RenderWindow * window, Point camera);
+    void move(int x, int y);
 
-  //Animation boilerplate
-  void set_stand_frames(Animation* left, Animation* right);
-  void set_walk_frames(Animation* left, Animation* right);
+    //Animation boilerplate
+    void set_stand_frames(Animation* left, Animation* right);
+    void set_walk_frames(Animation* left, Animation* right);
 
-  //Player actions
-  void jump();
-  void move(Point delta);
-  void fall();
+    //Player actions
+    void jump();
+    void move(Point delta);
+    void fall();
 
-  int get_state();
-  bool is_state_set(int state);
-  void set_state(int state);
-  void unset_state(int state);
-  void reset();
+    int get_state();
+    bool is_state_set(int state);
+    void set_state(int state);
+    void unset_state(int state);
+    void reset();
 
-  //Player walk handlers
-  void set_walk_speed(float walk, float max_walk, float walk_stop);
-  void walk_left();
-  void walk_right();
-  void float_up();
-  void float_down();
-  void stop_floating();
-  void stop_walking();
-  int get_illumination();
+    //Player walk handlers
+    void set_walk_speed(float walk, float max_walk, float walk_stop);
+    void walk_left();
+    void walk_right();
+    void float_up();
+    void float_down();
+    void stop_floating();
+    void stop_walking();
+    int get_illumination();
 
-  void set_jump_speed(float magnitude);
-  void set_fall_speed(float fall, float max_fall);
+    void set_jump_speed(float magnitude);
+    void set_fall_speed(float fall, float max_fall);
 
-  Rectangle get_bounding_rect();
-  Point position();
+    Rectangle get_bounding_rect();
+    Point position();
 
-private:
-  int _state;
-  sf::Sprite* _sprite;
-  Rectangle _bounding_rect;
-  float _walk, _max_walk, _walk_stop;
-  float _fall_speed, _max_fall_speed;
-  float _jump_speed;
+  private:
+    int _state;
+    sf::Sprite* _sprite;
+    Rectangle _bounding_rect;
+    float _walk, _max_walk, _walk_stop;
+    float _fall_speed, _max_fall_speed;
+    float _jump_speed;
 
-  bool _facing_right;
+    bool _facing_right;
 
-  //Animations
-  Animation* _stand_left, *_stand_right;
-  Animation* _walk_left;
-  Animation* _walk_right;
-};
-
+    //Animations
+    Animation* _stand_left, *_stand_right;
+    Animation* _walk_left;
+    Animation* _walk_right;
+  };
+}
 #endif

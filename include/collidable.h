@@ -4,12 +4,14 @@
 #include <iostream>
 #include "player.h"
 
-class Collidable {
-public:
-  Collidable();
-  virtual void perform_collision_action(Player* player, int& current_level);
+namespace Scoundrel {
+  class Collidable {
+  public:
+    Collidable();
+    virtual void perform_collision_action(Player* player, int& current_level);
 
 
-};
+  };
+}
 
 #endif

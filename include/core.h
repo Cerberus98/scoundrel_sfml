@@ -5,11 +5,13 @@
 #ifndef SCOUNDREL_CORE
 #define SCOUNDREL_CORE
 
-class Core {
+namespace Scoundrel {
+  class Core {
 
-private:
-  int _window_width, _windoth_height;
-  sf::Vector2f _camera_snap;
-};
+  private:
+    int _window_width, _windoth_height;
+    sf::Vector2f _camera_snap;
+  };
+}
 
 #endif
