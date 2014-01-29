@@ -615,6 +615,8 @@ namespace Scoundrel {
           case sf::Keyboard::F:
             show_fps = !show_fps;
             break;
+          default:
+            break;
         }
       } else if (event.type == sf::Event::KeyReleased) {
         if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {

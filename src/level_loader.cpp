@@ -30,7 +30,7 @@ namespace Scoundrel {
    * */
 
   Tile*** load_map(std::string level_path) {
-
+    return NULL;
   }
 
   Tile*** load_map(std::string level_path, Player* player, Camera* camera, std::map<int, Animation>* animation_map,
