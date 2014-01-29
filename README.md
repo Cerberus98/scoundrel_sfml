@@ -6,6 +6,12 @@ Thusly named because I intend to produce a roguelike with it at some point. Get 
 
 Also, used as the basis for my Ludum Dare Entry August 23-26, 2013.
 
+OSX Instructions:
+============
+I like homebrew. To get JsonCpp in brew, go here and follow the instructions [Homebrew JsonCpp tap](https://github.com/cuber/homebrew-jsoncpp)
+
+After JSON is installed, skip to the instructions below.
+
 
 Instructions:
 ============
