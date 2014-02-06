@@ -15,6 +15,7 @@ namespace Scoundrel {
   sf::SoundBuffer* sound_buffers;
   sf::Sound* sounds;
   std::map<int, Animation> animation_map;
+  sf::RenderWindow* game_window;
 
   game_modes game_mode;
   int game_start_level, current_level, total_levels;
@@ -31,14 +32,14 @@ namespace Scoundrel {
     return final_path.str();
   }
 
-  void load_config(int argc, char ** argv) {
+  void load_config(std::string path) {
     Json::Value root;
     Json::Reader reader;
     std::ifstream scoundrel_conf;
 
     //TODO: This need to be a configurable filename
     //scoundrel_conf.open(full_path("scoundrel.json").c_str());
-    scoundrel_conf.open("./scoundrel.json");
+    scoundrel_conf.open(path.c_str());
 
     bool parsed = reader.parse(scoundrel_conf, root);
     scoundrel_conf.close();
@@ -65,7 +66,8 @@ namespace Scoundrel {
     return tex;
   }
 
-  sf::RenderWindow* init_sfml() {
+  sf::RenderWindow* init_sfml(std::string path) {
+    load_config(path);
     sf::RenderWindow* game_window = new sf::RenderWindow();
     game_window->create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Scoundrel");
     return game_window;
@@ -88,29 +90,20 @@ namespace Scoundrel {
     game_entities.clear();
   }
 
-  void init_game()
+  void init_scoundrel(std::string path)
   {
+    //TODO: place this better.
+    game_window = init_sfml(path);
     init_graphics();
     init_audio();
 
     player = new Player(&sprites[3], Point(300, 300), Rectangle(6, 4, 26, 30));
-    player->set_walk_speed(WALK, MAX_WALK, WALK_STOP);
-    player->set_movement(0, 0);
-    player->set_fall_speed(GRAVITY, TERMINAL_VELOCITY);
-    player->set_jump_speed(JUMP_SPEED);
-    player->set_walk_frames(&animation_map[300], &animation_map[301]);
-    player->set_stand_frames(&animation_map[302], &animation_map[303]);
-
-    camera.set_absolute(0, 0);
-    camera.set_window_size(WINDOW_WIDTH, WINDOW_HEIGHT);
-    camera.set_window_snap(CAMERA_SNAP_X, CAMERA_SNAP_Y);
-    camera.calculate_snap();
 
     game_map = new GameMap(&tile_helper);
   }
 
-  void deinitialize_game(sf::RenderWindow* window) {
-    delete window;
+  void deinitialize_game() {
+    delete game_window;
     delete player;
     game_map->clear();
     clear_game_entities();
@@ -471,11 +464,11 @@ namespace Scoundrel {
     }
   }
 
-  void game_loop(sf::RenderWindow* window) {
-    while (window->isOpen()) {
-      window->clear(sf::Color::Black);
-      handle_events(window);
-      window->display();
+  void game_loop() {
+    while (game_window->isOpen()) {
+      game_window->clear(sf::Color::Black);
+      handle_events(game_window);
+      game_window->display();
     }
   }
 }

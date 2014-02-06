@@ -47,10 +47,10 @@ namespace Scoundrel {
   std::string proc_path;
 
   void load_config(int argc, char ** argv);
-  void init_game();
-  void game_loop(sf::RenderWindow * window);
-  void deinitialize_game(sf::RenderWindow * window);
-  sf::RenderWindow* init_sfml();
+  void init_scoundrel(std::string path);
+  void game_loop();
+  void deinitialize_game();
+  sf::RenderWindow* init_sfml(std::string path);
 
 }
 
