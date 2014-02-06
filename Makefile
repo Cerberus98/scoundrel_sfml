@@ -18,7 +18,6 @@ lib:
 	mkdir -p $(LIB_DIR)
 
 $(OBJS): $(OBJ_DIR)/%.o : $(SOURCE_DIR)/%.cpp | obj
-	@echo $<
 	$(CC) $(INCLUDE) -c $< -o $@
 
 $(LIB_FILE): $(OBJS) | lib

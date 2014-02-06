@@ -35,7 +35,10 @@ namespace Scoundrel {
     Json::Value root;
     Json::Reader reader;
     std::ifstream scoundrel_conf;
-    scoundrel_conf.open(full_path("scoundrel.json").c_str());
+
+    //TODO: This need to be a configurable filename
+    //scoundrel_conf.open(full_path("scoundrel.json").c_str());
+    scoundrel_conf.open("./scoundrel.json");
 
     bool parsed = reader.parse(scoundrel_conf, root);
     scoundrel_conf.close();
@@ -70,172 +73,12 @@ namespace Scoundrel {
 
 
   void init_tile_animations() {
-    tile_sheet = load_image(full_path("tile_sheet.png"));
-
-    //TODO: offload these into a config file later
-
-    //Rock 1 Tile
-    animation_map[1] = Animation();
-    animation_map[1].set_sprite_sheet(&tile_sheet);
-    animation_map[1].add_frame(sf::IntRect(32, 0, 32, 32));
-    animation_map[1].set_frame(0);
-
-    ////Rock 2 Tile
-    //animation_map[2] = Animation();
-    //animation_map[2].set_sprite_sheet(&tile_sheet);
-    //animation_map[2].add_frame(sf::IntRect(64, 0, 32, 32));
-    //animation_map[2].set_frame(0);
-
-    ////Rock 1 Ground
-    //animation_map[3] = Animation();
-    //animation_map[3].set_sprite_sheet(&tile_sheet);
-    //animation_map[3].add_frame(sf::IntRect(224, 0, 32, 32));
-    //animation_map[3].set_frame(0);
-
-    ////Dead Grass
-    //animation_map[4] = Animation();
-    //animation_map[4].set_sprite_sheet(&tile_sheet);
-    //animation_map[4].add_frame(sf::IntRect(0, 0, 32, 32));
-    //animation_map[4].set_frame(0);
-
-    ////Gray Rock 1
-    //animation_map[5] = Animation();
-    //animation_map[5].set_sprite_sheet(&tile_sheet);
-    //animation_map[5].add_frame(sf::IntRect(96, 0, 32, 32));
-    //animation_map[5].set_frame(0);
-
-    ////Gray Rock 2
-    //animation_map[6] = Animation();
-    //animation_map[6].set_sprite_sheet(&tile_sheet);
-    //animation_map[6].add_frame(sf::IntRect(128, 0, 32, 32));
-    //animation_map[6].set_frame(0);
-
-    ////Gray Rock Ground 1
-    //animation_map[7] = Animation();
-    //animation_map[7].set_sprite_sheet(&tile_sheet);
-    //animation_map[7].add_frame(sf::IntRect(288, 0, 32, 32));
-    //animation_map[7].set_frame(0);
-
-    ////Brown Spikes
-    //animation_map[100] = Animation();
-    //animation_map[100].set_sprite_sheet(&tile_sheet);
-    //animation_map[100].add_frame(sf::IntRect(160, 0, 32, 32));
-    //animation_map[100].set_frame(0);
-
-    ////Ceiling Brown Spikes
-    //animation_map[101] = Animation();
-    //animation_map[101].set_sprite_sheet(&tile_sheet);
-    //animation_map[101].add_frame(sf::IntRect(0, 96, 32, 32));
-    //animation_map[101].set_frame(0);
-
-    ////Right Facing Brown Spikes
-    //animation_map[102] = Animation();
-    //animation_map[102].set_sprite_sheet(&tile_sheet);
-    //animation_map[102].add_frame(sf::IntRect(32, 96, 32, 32));
-    //animation_map[102].set_frame(0);
-
-    ////left Facing Brown Spikes
-    //animation_map[103] = Animation();
-    //animation_map[103].set_sprite_sheet(&tile_sheet);
-    //animation_map[103].add_frame(sf::IntRect(64, 96, 32, 32));
-    //animation_map[103].set_frame(0);
-
-    ////Floor Gray Spikes
-    //animation_map[104] = Animation();
-    //animation_map[104].set_sprite_sheet(&tile_sheet);
-    //animation_map[104].add_frame(sf::IntRect(192, 0, 32, 32));
-    //animation_map[104].set_frame(0);
-
-    //Player walk left
-    animation_map[300] = Animation();
-    animation_map[300].set_sprite_sheet(&tile_sheet);
-    animation_map[300].add_frame(sf::IntRect(96, 32, 32, 32));
-    animation_map[300].add_frame(sf::IntRect(128, 32, 32, 32));
-    animation_map[300].add_frame(sf::IntRect(160, 32, 32, 32));
-    animation_map[300].add_frame(sf::IntRect(128, 32, 32, 32));
-    animation_map[300].set_frame_time(5);
-    animation_map[300].set_frame(0);
-
-    //Player walk right
-    animation_map[301] = Animation();
-    animation_map[301].set_sprite_sheet(&tile_sheet);
-    animation_map[301].add_frame(sf::IntRect(0, 32, 32, 32));
-    animation_map[301].add_frame(sf::IntRect(32, 32, 32, 32));
-    animation_map[301].add_frame(sf::IntRect(64, 32, 32, 32));
-    animation_map[301].add_frame(sf::IntRect(32, 32, 32, 32));
-    animation_map[301].set_frame_time(5);
-    animation_map[301].set_frame(0);
-
-    //Player stand left
-    animation_map[302] = Animation();
-    animation_map[302].set_sprite_sheet(&tile_sheet);
-    animation_map[302].add_frame(sf::IntRect(96, 32, 32, 32));
-    animation_map[302].set_frame(0);
-
-    //Player stand right
-    animation_map[303] = Animation();
-    animation_map[303].set_sprite_sheet(&tile_sheet);
-    animation_map[303].add_frame(sf::IntRect(0, 32, 32, 32));
-    animation_map[303].set_frame(0);
-
-    ////Battery
-    //animation_map[304] = Animation();
-    //animation_map[304].set_sprite_sheet(&tile_sheet);
-    //animation_map[304].add_frame(sf::IntRect(352, 0, 32, 32));
-    //animation_map[304].add_frame(sf::IntRect(384, 0, 32, 32));
-    //animation_map[304].add_frame(sf::IntRect(416, 0, 32, 32));
-    //animation_map[304].add_frame(sf::IntRect(384, 0, 32, 32));
-    //animation_map[304].set_frame_time(5);
-    //animation_map[304].set_frame(0);
-
-    ////Exit Arrow
-    //animation_map[305] = Animation();
-    //animation_map[305].set_sprite_sheet(&tile_sheet);
-    //animation_map[305].add_frame(sf::IntRect(0, 64, 32, 32));
-    //animation_map[305].add_frame(sf::IntRect(32, 64, 32, 32));
-    //animation_map[305].add_frame(sf::IntRect(64, 64, 32, 32));
-    //animation_map[305].add_frame(sf::IntRect(96, 64, 32, 32));
-    //animation_map[305].set_frame_time(5);
-    //animation_map[305].set_frame(0);
-
-    ////Radio
-    //animation_map[306] = Animation();
-    //animation_map[306].set_sprite_sheet(&tile_sheet);
-    //animation_map[306].add_frame(sf::IntRect(0, 128, 32, 32));
-    //animation_map[306].add_frame(sf::IntRect(32, 128, 32, 32));
-    //animation_map[306].add_frame(sf::IntRect(64, 128, 32, 32));
-    //animation_map[306].add_frame(sf::IntRect(32, 128, 32, 32));
-    //animation_map[306].set_frame_time(5);
-    //animation_map[306].set_frame(0);
-    
-    ////Grass
-    animation_map[0] = Animation();
-    animation_map[0].set_sprite_sheet(&tile_sheet);
-    animation_map[0].add_frame(sf::IntRect(0, 192, 32, 32));
-    animation_map[0].set_frame(0);
-
   }
 
   void init_graphics() {
-    sprites = new sf::Sprite[10];
-    textures = new sf::Texture[10];
-
-    init_tile_animations();
-
-    game_font.loadFromFile(full_path("digital_tech.otf"));
   }
 
   void init_audio() {
-    sound_buffers = new sf::SoundBuffer[5];
-    sounds = new sf::Sound[5];
-    //sound_buffers[0].loadFromFile(full_path("jump.wav"));
-    //sounds[0].setBuffer(sound_buffers[0]);
-
-    //sound_buffers[1].loadFromFile(full_path("battery.wav"));
-    //sounds[1].setBuffer(sound_buffers[1]);
-
-    //sound_buffers[2].loadFromFile(full_path("death.wav"));
-    //sounds[2].setBuffer(sound_buffers[2]);
   }
 
   void clear_game_entities() {
@@ -243,19 +86,6 @@ namespace Scoundrel {
       delete *it;
     }
     game_entities.clear();
-  }
-
-  void reset_game(bool hard=false) {
-    if (hard)
-      current_level = game_start_level;
-
-    player->set_alive();
-    player->reset();
-    clear_game_entities();
-    game_mode = GAME_PLAY;
-    game_map->load_level(proc_path, current_level, player, &camera, &animation_map, sounds, game_entities);
-    player->walk_right();
-    framerate = fps_clock.restart().asSeconds();
   }
 
   void init_game()
@@ -277,7 +107,6 @@ namespace Scoundrel {
     camera.calculate_snap();
 
     game_map = new GameMap(&tile_helper);
-    reset_game();
   }
 
   void deinitialize_game(sf::RenderWindow* window) {
@@ -331,7 +160,7 @@ namespace Scoundrel {
       int ptl = (int)player_tile_left.y;
       if (!game_map->get_tile(i, ptl)->passable()) {
         sf::Vector2f player_movement = player->get_movement();
-        Point tile_world = tile_helper.fromTileCoords(i, ptl); 
+        Point tile_world = tile_helper.fromTileCoords(i, ptl);
         float delta_y = float(left.y - tile_world.y - TILE_HEIGHT);
         if (delta_y == -1.f) {
           player->set_movement(player_movement.x, 0);
@@ -551,16 +380,6 @@ namespace Scoundrel {
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-          if (game_mode == GAME_END) {
-            reset_game();
-            return;
-          } else if (game_mode == GAME_WIN) {
-            reset_game(true);
-            return;
-          } else if (game_mode == GAME_NEXT_LEVEL) {
-            game_mode = GAME_PLAY;
-            return;
-          }
           key_state.space_pressed = true;
         }
 
@@ -612,7 +431,6 @@ namespace Scoundrel {
     if (!key_state.left_pressed && !key_state.right_pressed) {
       player->stop_walking();
     }
-    
   }
 
   void display_framerate(sf::RenderWindow* window) {
@@ -647,10 +465,6 @@ namespace Scoundrel {
           if (current_level > total_levels) {
             //You win!
             game_mode = GAME_WIN;
-          } else {
-            game_mode = GAME_NEXT_LEVEL;
-            reset_game();
-            return;
           }
         }
       }
@@ -658,72 +472,10 @@ namespace Scoundrel {
   }
 
   void game_loop(sf::RenderWindow* window) {
-    int decay = 30;
     while (window->isOpen()) {
       window->clear(sf::Color::Black);
       handle_events(window);
-
-      if (game_mode == GAME_PLAY || game_mode == GAME_MAP_EDIT) {
-        Rectangle view = camera.get_view_rect();
-        Point camera_pos = view.upper_left();
-
-        player_move();
-        collide_objects();
-
-        check_and_move_camera();
-
-        Point tile_start = tile_helper.toTileCoords(camera_pos);
-
-        Point draw_start = tile_helper.toTileCoords(view.left(), view.top());
-        Point draw_end = tile_helper.toTileCoords(view.right(), view.bottom());
-
-        int map_width = game_map->get_width();
-        int map_height = game_map->get_height();
-
-        draw_start.x = draw_start.x < 0 ? 0 : draw_start.x;
-        draw_start.y = draw_start.y < 0 ? 0 : draw_start.y;
-        draw_start.x = draw_start.x > map_width ? map_width : draw_start.x;
-        draw_start.y = draw_start.y > map_height ? map_height : draw_start.y;
-        draw_end.x = draw_end.x > map_width ? map_width : draw_end.x;
-        draw_end.y = draw_end.y > map_height ? map_height : draw_end.y;
-        draw_end.x = draw_end.x < 0 ? 0 : draw_end.x;
-        draw_end.y = draw_end.y < 0 ? 0 : draw_end.y;
-
-        game_map->draw(window, camera_pos, draw_start, draw_end, player, game_entities);
-
-        for (std::list<Entity *>::iterator it=game_entities.begin(); it != game_entities.end(); ++it) {
-          (*it)->draw(window, camera_pos);
-        }
-
-        player->draw(window, camera_pos);
-
-        if (show_fps)
-          display_framerate(window);
-
-        if (game_mode == GAME_PLAY) {
-          framerate = fps_clock.restart().asSeconds();
-        }
-      }
       window->display();
     }
   }
-}
-
-int main(int argc, char ** argv)
-{
-  char full_path[1024];
-  realpath(argv[0], full_path);
-
-  Scoundrel::proc_path = full_path;
-  unsigned found = Scoundrel::proc_path.find_last_of("/");
-  Scoundrel::proc_path = Scoundrel::proc_path.substr(0, found);
-
-  Scoundrel::load_config(argc, argv);
-  sf::RenderWindow* window = Scoundrel::init_sfml();
-  window->setFramerateLimit(Scoundrel::FRAMERATE_LIMIT);
-  window->setVerticalSyncEnabled(true);
-  Scoundrel::init_game();
-  Scoundrel::game_loop(window);
-  Scoundrel::deinitialize_game(window);
-  return 0;
 }
