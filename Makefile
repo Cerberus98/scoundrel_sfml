@@ -30,3 +30,6 @@ $(LIB_FILE): $(OBJS) | lib
 clean:
 	-rm $(OBJ_DIR)/*.o
 	-rm $(LIB_DIR)/$(LIB_FILE)
+
+demo: $(LIB_FILE) demo.cpp
+	$(CC) -L$(LIB_DIR)/ -lscoundrel $(CFLAGS) -odemo $(INCLUDE) demo.cpp
