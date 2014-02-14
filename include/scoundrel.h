@@ -48,6 +48,7 @@ namespace Scoundrel {
 
   void load_config(int argc, char ** argv);
   void init_scoundrel(std::string path);
+  void init_scoundrel(int window_width, int window_height);
   void game_loop();
   void deinitialize_game();
   sf::RenderWindow* init_sfml(std::string path);

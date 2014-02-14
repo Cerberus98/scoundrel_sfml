@@ -26,11 +26,21 @@ namespace Scoundrel {
     }
   }
 
-  sf::RenderWindow* init_sfml(std::string path) {
-    load_config(path);
+  sf::RenderWindow* init_window() {
     sf::RenderWindow* game_window = new sf::RenderWindow();
     game_window->create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Scoundrel");
     return game_window;
+  }
+
+  sf::RenderWindow* init_sfml(std::string path) {
+    load_config(path);
+    return init_window();
+  }
+
+  sf::RenderWindow* init_sfml(int window_width, int window_height) {
+    WINDOW_WIDTH = window_width;
+    WINDOW_HEIGHT = window_height;
+    return init_window();
   }
 
   void init_tile_animations() {
@@ -53,6 +63,12 @@ namespace Scoundrel {
   {
     //TODO: place this better.
     game_window = init_sfml(path);
+    init_graphics();
+    init_audio();
+  }
+
+  void init_scoundrel(int window_width, int window_height) {
+    game_window = init_sfml(window_width, window_height);
     init_graphics();
     init_audio();
   }
