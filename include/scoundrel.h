@@ -12,9 +12,11 @@
 
 #include <SFML/Audio.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 
 #include "animation.h"
+#include "clock.h"
 #include "collidable.h"
 #include "core.h"
 #include "camera.h"
@@ -27,6 +29,8 @@
 
 namespace Scoundrel {
   enum game_modes {GAME_PLAY, GAME_END, GAME_WIN, GAME_NEXT_LEVEL, GAME_MAP_EDIT};
+  //TODO: move this into core/universe later
+  Clock game_clock;
 
   //TODO: move away from all the globals.
   const float WALK = 0.25f;
@@ -48,10 +52,13 @@ namespace Scoundrel {
 
   void load_config(int argc, char ** argv);
   void init_scoundrel(std::string path);
-  void init_scoundrel(int window_width, int window_height);
+  void init_scoundrel(int window_width, int window_height, int framerate);
   void game_loop();
   void deinitialize_game();
   sf::RenderWindow* init_sfml(std::string path);
+
+  int max_framerate;
+  U64 frame_time;
 
 }
 

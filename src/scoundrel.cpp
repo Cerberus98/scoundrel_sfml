@@ -67,7 +67,10 @@ namespace Scoundrel {
     init_audio();
   }
 
-  void init_scoundrel(int window_width, int window_height) {
+  void init_scoundrel(int window_width, int window_height, int framerate) {
+    max_framerate = framerate;
+    U64 frame_time = (1.0f / float(max_framerate)) * 100000;
+
     game_window = init_sfml(window_width, window_height);
     init_graphics();
     init_audio();
@@ -100,10 +103,20 @@ namespace Scoundrel {
   }
 
   void game_loop() {
+    U64 sleep_time;
+
     while (game_window->isOpen()) {
+      //TODO: This needs to be configurable, colorwise, or even drawing fullscreen graphics.
+      //      Best answer seems to suggest abstraction like TileLayers, ColorLayers, ImageLayers
+      //      and Composite Layers(former 3 in any order)
       game_window->clear(sf::Color::Black);
       handle_events(game_window);
+
+      sleep_time = frame_time - game_clock.get_elapsed_time();;
+      if (sleep_time >= 0.f)
+        game_clock.wait(sleep_time);
       game_window->display();
+      game_clock.restart();
     }
   }
 }
