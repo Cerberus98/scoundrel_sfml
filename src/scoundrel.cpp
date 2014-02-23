@@ -102,21 +102,28 @@ namespace Scoundrel {
   void collide_objects() {
   }
 
-  void game_loop() {
-    U64 sleep_time;
+  void set_game_handler(Scoundrel* game) {
+    _game = game;
+  }
 
+  void game_loop() {
+
+    //TODO: This needs to be configurable, colorwise, or even drawing fullscreen graphics.
+    //      Best answer seems to suggest abstraction like TileLayers, ColorLayers, ImageLayers
+    //      and Composite Layers(former 3 in any order)
+    U64 sleep_time;
     while (game_window->isOpen()) {
-      //TODO: This needs to be configurable, colorwise, or even drawing fullscreen graphics.
-      //      Best answer seems to suggest abstraction like TileLayers, ColorLayers, ImageLayers
-      //      and Composite Layers(former 3 in any order)
+      _game->frame_start();
+
       game_window->clear(sf::Color::Black);
       handle_events(game_window);
-
       sleep_time = frame_time - game_clock.get_elapsed_time();;
       if (sleep_time >= 0.f)
         game_clock.wait(sleep_time);
       game_window->display();
       game_clock.restart();
+
+      _game->frame_end();
     }
   }
 }
