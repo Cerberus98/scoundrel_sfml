@@ -102,8 +102,17 @@ namespace Scoundrel {
   void collide_objects() {
   }
 
-  void set_game_handler(Scoundrel* game) {
+  void set_frame_handler(FrameHandler* game) {
     _game = game;
+  }
+
+  void insert_layer(Layer* layer, U32 index) {
+    //TODO: actually insert at the index into the eventual linked list
+    _layer = layer;
+  }
+
+  Layer* get_layer(U32 index) {
+    return NULL;
   }
 
   void game_loop() {
@@ -111,19 +120,27 @@ namespace Scoundrel {
     //TODO: This needs to be configurable, colorwise, or even drawing fullscreen graphics.
     //      Best answer seems to suggest abstraction like TileLayers, ColorLayers, ImageLayers
     //      and Composite Layers(former 3 in any order)
-    U64 sleep_time;
+    U64 sleep_time, elapsed;
     while (game_window->isOpen()) {
       _game->frame_start();
 
       game_window->clear(sf::Color::Black);
+
+      //TODO: Pull this out into a draw_loop()
+      _layer->draw();
+
       handle_events(game_window);
-      sleep_time = frame_time - game_clock.get_elapsed_time();;
+      elapsed = game_clock.get_elapsed_time();
+      sleep_time = frame_time - elapsed;
+
+      // TODO: Decide on run time resolution. Book has suggestions
+      // runtime += (sleep_time + elapsed);
+
       if (sleep_time >= 0.f)
         game_clock.wait(sleep_time);
       game_window->display();
+      _game->frame_end(elapsed);
       game_clock.restart();
-
-      _game->frame_end();
     }
   }
 }
