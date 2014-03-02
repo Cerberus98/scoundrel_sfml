@@ -5,6 +5,7 @@
 #include "os.h"
 #include "tile_layer.h"
 #include "types.h"
+#include "resource.h"
 
 
 class Demo : public Scoundrel::FrameHandler {
@@ -15,6 +16,12 @@ class Demo : public Scoundrel::FrameHandler {
   }
 
 };
+
+
+void test_resource_loading() {
+  Scoundrel::Resource resource;
+}
+
 
 void test_linked_list() {
   Scoundrel::LinkedList<Scoundrel::U32> list;
@@ -65,6 +72,7 @@ void test_linked_list() {
 }
 
 int main(int argc, char ** argv) {
+  test_resource_loading();
   test_linked_list();
   Scoundrel::init_scoundrel(800, 600, 60);
   Demo demo;
