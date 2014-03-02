@@ -43,7 +43,8 @@ namespace Scoundrel {
     };
 
     LinkedList<T>() {
-      _tail = _head;
+      _tail = _head = NULL;
+      _length = 0;
     }
 
     ~LinkedList<T>() {
@@ -96,7 +97,7 @@ namespace Scoundrel {
 
     void insert(T data, U32 index) {
       Node* ptr;
-      if (index > _length) {
+      if (index >= _length) {
         append(data);
         return;
       }
@@ -137,21 +138,27 @@ namespace Scoundrel {
 
       Node* prev, *next;
       T data;
-      prev = ptr->prev;
-      next = ptr->next;
       data = ptr->data;
 
-      if (prev)
-        prev->next = next;
-      else // removed the head, repoint head
-        _head = next;
-
-      if (next)
-        next->prev = prev;
-      else // remove the tail, repoint tail
-        _tail = prev;
+      delete_node(ptr);
 
       return data;
+    }
+
+    void delete_node(Node* node) {
+      if (node) {
+        if (node->prev)
+          node->prev->next = node->next;
+        else
+          _head = node->next;
+
+        if (node->next)
+          node->next->prev = node->prev;
+        else
+          _tail = node->prev;
+
+        delete node;
+      }
     }
 
     U32 length() {
@@ -184,6 +191,7 @@ namespace Scoundrel {
       iter i;
       i.head = _head;
       i.tail = _tail;
+      i.current = NULL;
       return i;
     }
 

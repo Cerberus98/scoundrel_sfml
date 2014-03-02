@@ -127,8 +127,10 @@ namespace Scoundrel {
       game_window->clear(sf::Color::Black);
 
       //TODO: Pull this out into a draw_loop()
-      for (LinkedList<Layer *>::iter i = _layers.get_iterator(); !i.end(); i.next())
-        i.data()->draw();
+      LinkedList<Layer *>::iter list_iter = _layers.get_iterator();
+      while (list_iter.next()) {
+        list_iter.data()->draw();
+      }
 
       handle_events(game_window);
       elapsed = game_clock.get_elapsed_time();

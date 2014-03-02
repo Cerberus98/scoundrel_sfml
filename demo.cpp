@@ -16,9 +16,7 @@ class Demo : public Scoundrel::FrameHandler {
 
 };
 
-
-
-int main(int argc, char ** argv) {
+void test_linked_list() {
   Scoundrel::LinkedList<Scoundrel::U32> list;
   list.insert(0, 0);
   list.print();
@@ -50,12 +48,24 @@ int main(int argc, char ** argv) {
   list.append(300);
   list.print();
 
+  std::cout << std::endl;
   Scoundrel::LinkedList<Scoundrel::U32>::iter list_iter = list.get_iterator();
-  do {
-    std::cout << list_iter.data() << " ";
-  } while (list_iter.next());
+
+  list_iter.next(); //Should be deleting the head node
+  list.delete_node(list_iter.current);
+  list.print();
   std::cout << std::endl;
 
+  for (int i = 0; i<6; ++i)
+    list_iter.next();
+  list.delete_node(list_iter.current); //Should be deleting the last node
+  list.print();
+
+  std::cout << std::endl;
+}
+
+int main(int argc, char ** argv) {
+  test_linked_list();
   Scoundrel::init_scoundrel(800, 600, 60);
   Demo demo;
 
@@ -63,7 +73,7 @@ int main(int argc, char ** argv) {
 
   Scoundrel::TileLayer tile_layer;
 
-  //Scoundrel::insert_layer(&tile_layer, 0);
+  Scoundrel::insert_layer(&tile_layer, 0);
   Scoundrel::set_frame_handler(&demo);
   Scoundrel::game_loop();
 
