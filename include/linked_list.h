@@ -10,18 +10,47 @@ namespace Scoundrel {
 
   template <typename T>
   class LinkedList {
-  //TODO: Make this a legitimate intrusive list, but this is works for now
+  //TODO: Make this a legitimate intrusive list, but this works for now
   public:
     struct Node {
       Node* prev;
       Node* next;
       T data;
     };
+
+    struct iter {
+      Node* head, *tail;
+      Node* current;
+      Node* next() {
+        if (current)
+          current = current->next;
+        else
+          current = head;
+
+        return current;
+      }
+
+      bool end() {
+        return current == tail;
+      }
+
+      T data() {
+        if (current) {
+          return current->data;
+        }
+        return static_cast<T>(NULL);
+      }
+    };
+
     LinkedList<T>() {
       _tail = _head;
     }
 
     ~LinkedList<T>() {
+      clear();
+    }
+
+    void clear() {
       Node* ptr = _head;
       Node* next;
       while (ptr) {
@@ -65,16 +94,45 @@ namespace Scoundrel {
       return data;
     }
 
+    void insert(T data, U32 index) {
+      Node* ptr;
+      if (index > _length) {
+        append(data);
+        return;
+      }
+
+      ptr = _head;
+      for (U32 i; i < index; ++i)
+        ptr = ptr->next;
+
+      if (!ptr) { // first element in the list
+        _head = new Node();
+        _head->data = data;
+        _tail = _head;
+      } else {
+        Node* new_node = new Node();
+        new_node->data = data;
+
+        if (ptr->prev) {
+          ptr->prev->next = new_node;
+          new_node->prev = ptr->prev;
+        }
+
+        new_node->next = ptr;
+        ptr->prev = new_node;
+
+        if (ptr == _head)
+          _head = new_node;
+      }
+    }
+
     T remove(U32 index) {
       Node* ptr;
-      if (index < 0)
-        return static_cast<T>(NULL);
-
       if (index > _length-1)
         return static_cast<T>(NULL);
 
       ptr = _head;
-      for (U32 i; i <= index; ++i)
+      for (U32 i; i < index; ++i)
         ptr = ptr->next;
 
       Node* prev, *next;
@@ -85,8 +143,13 @@ namespace Scoundrel {
 
       if (prev)
         prev->next = next;
+      else // removed the head, repoint head
+        _head = next;
+
       if (next)
         next->prev = prev;
+      else // remove the tail, repoint tail
+        _tail = prev;
 
       return data;
     }
@@ -103,12 +166,32 @@ namespace Scoundrel {
       }
     }
 
+    T first() {
+      if (_head)
+        return _head->data;
+      else
+        return static_cast<T>(NULL);
+    }
+
+    T last() {
+      if (_tail)
+        return _tail->data;
+      else
+        return static_cast<T>(NULL);
+    }
+
+    iter get_iterator() {
+      iter i;
+      i.head = _head;
+      i.tail = _tail;
+      return i;
+    }
+
+
   private:
-    Node * _head;
-    Node * _tail;
+    Node* _head;
+    Node* _tail;
     U32 _length;
-
-
   };
 }
 

@@ -108,7 +108,7 @@ namespace Scoundrel {
 
   void insert_layer(Layer* layer, U32 index) {
     //TODO: actually insert at the index into the eventual linked list
-    _layer = layer;
+    _layers.insert(layer, index);
   }
 
   Layer* get_layer(U32 index) {
@@ -127,7 +127,8 @@ namespace Scoundrel {
       game_window->clear(sf::Color::Black);
 
       //TODO: Pull this out into a draw_loop()
-      _layer->draw();
+      for (LinkedList<Layer *>::iter i = _layers.get_iterator(); !i.end(); i.next())
+        i.data()->draw();
 
       handle_events(game_window);
       elapsed = game_clock.get_elapsed_time();

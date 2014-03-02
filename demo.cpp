@@ -20,6 +20,13 @@ class Demo : public Scoundrel::FrameHandler {
 
 int main(int argc, char ** argv) {
   Scoundrel::LinkedList<Scoundrel::U32> list;
+  list.insert(0, 0);
+  list.print();
+  std::cout << std::endl;
+  list.remove(0);
+  list.print();
+
+  std::cout << std::endl;
   list.append(1);
   list.append(2);
   list.append(3);
@@ -27,6 +34,27 @@ int main(int argc, char ** argv) {
   list.append(5);
   list.print();
 
+  std::cout << std::endl;
+  list.insert(10, 0);
+  list.print();
+
+  std::cout << std::endl;
+  list.insert(20, 6);
+  list.print();
+
+  std::cout << std::endl;
+  list.remove(0);
+  list.print();
+
+  std::cout << std::endl;
+  list.append(300);
+  list.print();
+
+  Scoundrel::LinkedList<Scoundrel::U32>::iter list_iter = list.get_iterator();
+  do {
+    std::cout << list_iter.data() << " ";
+  } while (list_iter.next());
+  std::cout << std::endl;
 
   Scoundrel::init_scoundrel(800, 600, 60);
   Demo demo;
@@ -35,7 +63,7 @@ int main(int argc, char ** argv) {
 
   Scoundrel::TileLayer tile_layer;
 
-  Scoundrel::insert_layer(&tile_layer, 0);
+  //Scoundrel::insert_layer(&tile_layer, 0);
   Scoundrel::set_frame_handler(&demo);
   Scoundrel::game_loop();
 
