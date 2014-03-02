@@ -22,6 +22,7 @@
 #include "camera.h"
 #include "game_map.h"
 #include "layer.h"
+#include "linked_list.h"
 #include "player.h"
 #include "scoundrel_utils.h"
 #include "tile.h"
@@ -64,6 +65,6 @@ namespace Scoundrel {
   FrameHandler * _game;
 
   //TODO: this should really be a linked list, but this is for testing
-  Layer* _layer;
+  LinkedList<Layer* > _layers;
 }
 

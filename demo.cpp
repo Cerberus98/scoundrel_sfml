@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "linked_list.h"
 #include "scoundrel.h"
 #include "os.h"
 #include "tile_layer.h"
@@ -15,9 +16,56 @@ class Demo : public Scoundrel::FrameHandler {
 
 };
 
+void test_linked_list() {
+  Scoundrel::LinkedList<Scoundrel::U32> list;
+  list.insert(0, 0);
+  list.print();
+  std::cout << std::endl;
+  list.remove(0);
+  list.print();
 
+  std::cout << std::endl;
+  list.append(1);
+  list.append(2);
+  list.append(3);
+  list.append(4);
+  list.append(5);
+  list.print();
+
+  std::cout << std::endl;
+  list.insert(10, 0);
+  list.print();
+
+  std::cout << std::endl;
+  list.insert(20, 6);
+  list.print();
+
+  std::cout << std::endl;
+  list.remove(0);
+  list.print();
+
+  std::cout << std::endl;
+  list.append(300);
+  list.print();
+
+  std::cout << std::endl;
+  Scoundrel::LinkedList<Scoundrel::U32>::iter list_iter = list.get_iterator();
+
+  list_iter.next(); //Should be deleting the head node
+  list.delete_node(list_iter.current);
+  list.print();
+  std::cout << std::endl;
+
+  for (int i = 0; i<6; ++i)
+    list_iter.next();
+  list.delete_node(list_iter.current); //Should be deleting the last node
+  list.print();
+
+  std::cout << std::endl;
+}
 
 int main(int argc, char ** argv) {
+  test_linked_list();
   Scoundrel::init_scoundrel(800, 600, 60);
   Demo demo;
 
