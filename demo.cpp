@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "linked_list.h"
 #include "scoundrel.h"
 #include "os.h"
 #include "tile_layer.h"
@@ -18,6 +19,15 @@ class Demo : public Scoundrel::FrameHandler {
 
 
 int main(int argc, char ** argv) {
+  Scoundrel::LinkedList<Scoundrel::U32> list;
+  list.append(1);
+  list.append(2);
+  list.append(3);
+  list.append(4);
+  list.append(5);
+  list.print();
+
+
   Scoundrel::init_scoundrel(800, 600, 60);
   Demo demo;
 
