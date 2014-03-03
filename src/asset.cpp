@@ -12,7 +12,6 @@ namespace Scoundrel {
     std::cout << "Loading asset: " << name << std::endl;
     if (!texture.loadFromFile(path)) {
       // error...
-      std::cout << "Could not load " << path << " (check the path)." << std::endl;
     } else {
       sprite.setTexture(texture);
       std::cout << "\tAsset loaded!" << std::endl;
