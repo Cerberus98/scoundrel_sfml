@@ -24,9 +24,9 @@ namespace Scoundrel {
           sprite.setTexture(texture);
         }
         break;
+      // TODO(mpath): more types here...
       default:
         break;
-        
     }
     
   }
