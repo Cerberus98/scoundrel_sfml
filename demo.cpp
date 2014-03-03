@@ -19,7 +19,9 @@ class Demo : public Scoundrel::FrameHandler {
 
 
 void test_resource_loading() {
-  Scoundrel::Asset asset("the-name-is-known", "/Users/john6414/code/scoundrel_sfml/src/resources/tree.png");
+  Scoundrel::Asset asset("the-name-is-known",
+    "/Users/john6414/code/scoundrel_sfml/src/resources/tree.png",
+    Scoundrel::TEXTURE);
   asset.load_asset();
 }
 
