@@ -61,7 +61,7 @@ namespace Scoundrel {
 
   void init_scoundrel(std::string path)
   {
-    //TODO: place this better.
+    //TODO: place this better (the window and return, likely in core)
     game_window = init_sfml(path);
     init_graphics();
     init_audio();
@@ -122,14 +122,13 @@ namespace Scoundrel {
     //      and Composite Layers(former 3 in any order)
     U64 sleep_time, elapsed;
     while (game_window->isOpen()) {
-      _game->frame_start();
-
+      //TODO: Don't always automatically do this
       game_window->clear(sf::Color::Black);
 
       //TODO: Pull this out into a draw_loop()
       LinkedList<Layer *>::iter list_iter = _layers.get_iterator();
       while (list_iter.next()) {
-        list_iter.data()->draw();
+        list_iter.data()->draw(game_window, 0, 0);
       }
 
       handle_events(game_window);
@@ -142,7 +141,7 @@ namespace Scoundrel {
       if (sleep_time >= 0.f)
         game_clock.wait(sleep_time);
       game_window->display();
-      _game->frame_end(elapsed);
+      _game->frame(elapsed);
       game_clock.restart();
     }
   }

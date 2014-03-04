@@ -33,8 +33,7 @@
 namespace Scoundrel {
   class FrameHandler {
   public:
-    virtual void frame_start() = 0;
-    virtual void frame_end(U64 elapsed) = 0;
+    virtual void frame(U64 elapsed) = 0;
   };
 
   enum game_modes {GAME_PLAY, GAME_END, GAME_WIN, GAME_NEXT_LEVEL, GAME_MAP_EDIT};

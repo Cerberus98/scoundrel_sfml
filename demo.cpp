@@ -3,17 +3,14 @@
 #include "linked_list.h"
 #include "scoundrel.h"
 #include "os.h"
+#include "shape_drawable.h"
 #include "tile_layer.h"
 #include "types.h"
 
 
 class Demo : public Scoundrel::FrameHandler {
-  void frame_start() {
+  void frame(Scoundrel::U64 elapsed) {
   }
-
-  void frame_end(Scoundrel::U64 elapsed) {
-  }
-
 };
 
 void test_linked_list() {
@@ -65,13 +62,14 @@ void test_linked_list() {
 }
 
 int main(int argc, char ** argv) {
-  test_linked_list();
   Scoundrel::init_scoundrel(800, 600, 60);
   Demo demo;
 
   //TODO: Load resources here
 
-  Scoundrel::TileLayer tile_layer;
+  Scoundrel::TileLayer tile_layer(800, 600);
+  Scoundrel::RectangleDrawable rect(32, 32);
+  tile_layer.set_drawable(&rect);
 
   Scoundrel::insert_layer(&tile_layer, 0);
   Scoundrel::set_frame_handler(&demo);

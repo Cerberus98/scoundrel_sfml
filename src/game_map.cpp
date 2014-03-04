@@ -17,7 +17,7 @@ namespace Scoundrel {
     std::stringstream map_stream;
     map_stream << proc_path << "/level" << level;
     map_path = map_stream.str();
-    _game_map = load_map(map_path, player, camera, animation_map, sounds, game_entities, _tile_helper, _width, _height, _ambient_light);
+    //_game_map = load_map(map_path, player, camera, animation_map, sounds, game_entities, _tile_helper, _width, _height, _ambient_light);
   }
 
   Tile* GameMap::get_tile(int x, int y) {
@@ -98,12 +98,12 @@ namespace Scoundrel {
 
         brightness = brightness < _ambient_light ? _ambient_light : brightness;
 
-        Animation * anim = _game_map[i][j]->get_animation();
-        if (anim)
-          anim->setColor(255, 255, 255, brightness);
+        //Animation * anim = _game_map[i][j]->get_animation();
+        //if (anim)
+        //  anim->setColor(255, 255, 255, brightness);
 
-        _game_map[i][j]->draw(window, Point(i * _tile_helper->tile_width - camera_pos.x,
-                                            j * _tile_helper->tile_height - camera_pos.y), 0.4f);
+        //_game_map[i][j]->draw(window, Point(i * _tile_helper->tile_width - camera_pos.x,
+        //                                    j * _tile_helper->tile_height - camera_pos.y), 0.4f);
       }
     }
   }

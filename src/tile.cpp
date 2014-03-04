@@ -1,42 +1,30 @@
 #include "tile.h"
 
 namespace Scoundrel {
-  Tile::Tile(bool passable, bool deadly) {
-    _animation = NULL;
-    _passable = passable;
-    _is_deadly = deadly;
+  Tile::Tile() {
+    _drawable = NULL;
   }
 
-  Tile::Tile(Animation* animation, bool passable, bool deadly) {
-    _animation = animation;
-    _passable = passable;
-    _is_deadly = deadly;
+  Tile::Tile(Drawable* drawable) {
+    _drawable = drawable;
   }
 
-  void Tile::set_animation(Animation* animation) {
-    _animation = animation;
+  void Tile::set_drawable(Drawable* drawable) {
+    _drawable = drawable;
   }
 
-  Animation* Tile::get_animation() {
-    return _animation;
+  Drawable* Tile::get_drawable() {
+    return _drawable;
   }
 
-  void Tile::draw(sf::RenderWindow* window, Point position, float brightness) {
-    if (_animation) {
-      _animation->setPosition(position.x, position.y);
-      window->draw(*_animation);
-    }
+  void Tile::draw(sf::RenderWindow* window, U32 x, U32 y) {
+    //if (_drawable) {
+    //  _drawable->setPosition(x, y);
+    //  window->draw(*_drawable);
+    //}
   }
 
-  void Tile::set_passable(bool state) {
-    _passable = state;
-  }
-
-  bool Tile::is_deadly() {
-    return _is_deadly;
-  }
-
-  bool Tile::passable() {
-    return _passable;
+  void Tile::draw(sf::RenderWindow* window, Point position) {
+    draw(window, position.x, position.y);
   }
 }
