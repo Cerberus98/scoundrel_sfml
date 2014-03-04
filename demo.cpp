@@ -68,8 +68,13 @@ int main(int argc, char ** argv) {
   //TODO: Load resources here
 
   Scoundrel::TileLayer tile_layer(800, 600);
+  Scoundrel::Tile tile;
   Scoundrel::RectangleDrawable rect(32, 32);
-  tile_layer.set_drawable(&rect);
+
+  tile.set_drawable(&rect);
+
+  //TODO this won't be how it really works. We might pass a reference to a 2D array or something
+  tile_layer.add_tile(&tile);
 
   Scoundrel::insert_layer(&tile_layer, 0);
   Scoundrel::set_frame_handler(&demo);
