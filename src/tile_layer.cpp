@@ -7,10 +7,11 @@ namespace Scoundrel {
     _map = NULL;
   }
 
-  //TODO: Later, the camera will be associated with the game,
-  //      and can be queried to get the exact drawable region
-  //      for indexing into the map
-  void TileLayer::draw(sf::RenderWindow* window, U32 x, U32 y) {
+  void TileLayer::draw(sf::RenderWindow* window, Camera* camera) {
+    Point pos = camera->position();
+    U32 x = pos.x;
+    U32 y = pos.y;
+
     if (_map) {
       for (int i = 0; i < _map_height; ++i) {
         for (int j = 0; j < _map_width; ++j) {

@@ -1,5 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+
+#include "camera.h"
 #include "types.h"
 
 #ifndef SCOUNDREL_LAYER
@@ -8,7 +10,7 @@
 namespace Scoundrel {
   class Layer {
   public:
-    virtual void draw(sf::RenderWindow* window, U32 x, U32 y) = 0;
+    virtual void draw(sf::RenderWindow* window, Camera* camera) = 0;
 
   };
 }

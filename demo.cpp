@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "camera.h"
 #include "linked_list.h"
 #include "scoundrel.h"
 #include "os.h"
@@ -85,6 +86,8 @@ int main(int argc, char ** argv) {
   Scoundrel::Tile*** game_map;
   Scoundrel::TileLayer tile_layer(tile_width, tile_height);
   Scoundrel::RectangleDrawable rect(32, 32);
+  Scoundrel::Camera camera;
+
   tile_registry[0].set_drawable(&rect);
 
   init_map(game_map, tile_registry, map_width, map_height);
@@ -96,6 +99,7 @@ int main(int argc, char ** argv) {
   //TODO this won't be how it really works. We might pass a reference to a 2D array or something
   tile_layer.attach_map(game_map, map_width, map_height);
   Scoundrel::insert_layer(&tile_layer, 0);
+  Scoundrel::set_camera(&camera);
   Scoundrel::set_frame_handler(&demo);
   Scoundrel::game_loop();
 

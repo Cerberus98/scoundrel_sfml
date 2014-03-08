@@ -106,6 +106,10 @@ namespace Scoundrel {
     _game = game;
   }
 
+  void set_camera(Camera* camera) {
+    _camera = camera;
+  }
+
   void insert_layer(Layer* layer, U32 index) {
     //TODO: actually insert at the index into the eventual linked list
     _layers.insert(layer, index);
@@ -127,7 +131,7 @@ namespace Scoundrel {
 
       LinkedList<Layer *>::iter list_iter = _layers.get_iterator();
       while (list_iter.next()) {
-        list_iter.data()->draw(game_window, 0, 0);
+        list_iter.data()->draw(game_window, _camera);
       }
 
       handle_events(game_window);

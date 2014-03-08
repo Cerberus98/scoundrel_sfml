@@ -2,6 +2,10 @@
 
 namespace Scoundrel {
   Camera::Camera() {
+    _camera_upper_left.x = 0;
+    _camera_upper_left.y = 0;
+    _camera_lower_right.x = 0;
+    _camera_lower_right.y = 0;
   }
 
   Camera::Camera(int window_width, int window_height, float snap_x, float snap_y) {

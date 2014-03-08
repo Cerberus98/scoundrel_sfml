@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "camera.h"
 #include "layer.h"
 #include "tile.h"
 #include "types.h"
@@ -11,7 +12,7 @@ namespace Scoundrel {
   class TileLayer : public Layer {
   public:
     TileLayer(U32 tile_width, U32 tile_height);
-    void draw(sf::RenderWindow* window, U32 x, U32 y);
+    void draw(sf::RenderWindow* window, Camera* camera);
 
     //TODO This goes away, need to think about this interface
     void attach_map(Tile*** map, U32 width, U32 height);
