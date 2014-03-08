@@ -125,7 +125,6 @@ namespace Scoundrel {
       //TODO: Don't always automatically do this
       game_window->clear(sf::Color::Black);
 
-      //TODO: Pull this out into a draw_loop()
       LinkedList<Layer *>::iter list_iter = _layers.get_iterator();
       while (list_iter.next()) {
         list_iter.data()->draw(game_window, 0, 0);

@@ -62,19 +62,37 @@ void test_linked_list() {
 }
 
 int main(int argc, char ** argv) {
+  Scoundrel::U32 screen_width = 800;
+  Scoundrel::U32 screen_height = 600;
+  Scoundrel::U32 tile_width = 32;
+  Scoundrel::U32 tile_height = 32;
+
+  Scoundrel::U32 map_width = (screen_width * 3) / tile_width;
+  Scoundrel::U32 map_height = (screen_height * 3) / tile_height;
+
+  Scoundrel::Tile tile_registry[1];
+
+  Scoundrel::Tile*** game_map;
+
   Scoundrel::init_scoundrel(800, 600, 60);
   Demo demo;
 
   //TODO: Load resources here
 
   Scoundrel::TileLayer tile_layer(800, 600);
-  Scoundrel::Tile tile;
   Scoundrel::RectangleDrawable rect(32, 32);
+  tile_registry[0].set_drawable(&rect);
 
-  tile.set_drawable(&rect);
+  game_map = new Scoundrel::Tile**[map_height];
+  for (int i = 0; i < map_height; ++i) {
+    game_map[i] = new Scoundrel::Tile*[map_width];
+    for (int j = 0; j < map_width; ++j) {
+      game_map[j][i] = &tile_registry[0];
+    }
+  }
 
   //TODO this won't be how it really works. We might pass a reference to a 2D array or something
-  tile_layer.add_tile(&tile);
+  tile_layer.attach_map(game_map);
 
   Scoundrel::insert_layer(&tile_layer, 0);
   Scoundrel::set_frame_handler(&demo);
@@ -82,7 +100,13 @@ int main(int argc, char ** argv) {
 
   // re-init the demo as a basic scroll map with a sprite that wanders around
   // animated.
+  for (int i = 0; i < map_height; ++i) {
+    delete game_map[i];
+  }
+  delete game_map;
+
   Scoundrel::deinitialize_game();
+
   return 0;
 }
 
