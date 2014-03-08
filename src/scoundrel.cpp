@@ -84,9 +84,30 @@ namespace Scoundrel {
     }
   }
 
+  KeyState get_key_state() {
+    return _key_state;
+  }
+
   void handle_events(sf::RenderWindow* window) {
+    //TODO This needs a real overhaul. Obviously we don't want to be closing the window
+    //     for every game that utilizes the engine. Also it should be easier to use.
+    //     We need to figure out if we want to associate methods with keys or 
+    //     provide a per frame index that's operated on in the frame() call
     sf::Event event;
     while (window->pollEvent(event)) {
+      if (event.type == sf::Event::KeyPressed) {
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+          _key_state.left_pressed = true;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+          _key_state.right_pressed = true;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+          _key_state.up_pressed = true;
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+          _key_state.down_pressed = true;
+
         switch(event.key.code) {
           case sf::Keyboard::Escape:
             window->close();
@@ -94,8 +115,19 @@ namespace Scoundrel {
           default:
             break;
         }
-      if (event.type == sf::Event::Closed)
-        window->close();
+      } else if (event.type == sf::Event::KeyReleased) {
+        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+          _key_state.left_pressed = false;
+
+        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+          _key_state.right_pressed = false;
+
+        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+          _key_state.up_pressed = false;
+
+        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+          _key_state.down_pressed = false;
+      }
     }
   }
 
@@ -104,6 +136,10 @@ namespace Scoundrel {
 
   void set_frame_handler(FrameHandler* game) {
     _game = game;
+  }
+
+  Camera* get_camera() {
+    return _camera;
   }
 
   void set_camera(Camera* camera) {

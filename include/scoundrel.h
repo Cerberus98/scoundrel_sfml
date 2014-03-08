@@ -49,8 +49,11 @@ namespace Scoundrel {
   void init_scoundrel(std::string path);
   void init_scoundrel(int window_width, int window_height, int framerate);
   void set_frame_handler(FrameHandler* game);
+  void handle_events(sf::RenderWindow* window);
+  KeyState get_key_state();
 
   void set_camera(Camera* camera);
+  Camera* get_camera();
 
   // Returns elapsed time of last frame
   void game_loop();
@@ -67,6 +70,7 @@ namespace Scoundrel {
   FrameHandler * _game;
 
   Camera* _camera;
+  KeyState _key_state;
 
   //TODO: this should really be a linked list, but this is for testing
   LinkedList<Layer* > _layers;

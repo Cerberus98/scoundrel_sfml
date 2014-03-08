@@ -5,12 +5,26 @@
 #include "scoundrel.h"
 #include "os.h"
 #include "shape_drawable.h"
+#include "scoundrel_utils.h"
 #include "tile_layer.h"
 #include "types.h"
 
 
 class Demo : public Scoundrel::FrameHandler {
   void frame(Scoundrel::U64 elapsed) {
+    Scoundrel::KeyState key_state = Scoundrel::get_key_state();
+    Scoundrel::Camera* camera = Scoundrel::get_camera();
+    if (key_state.left_pressed)
+      camera->move(-2, 0);
+
+    if (key_state.right_pressed)
+      camera->move(2, 0);
+
+    if (key_state.up_pressed)
+      camera->move(0, -2);
+
+    if (key_state.down_pressed)
+      camera->move(0, 2);
   }
 };
 
@@ -97,16 +111,13 @@ int main(int argc, char ** argv) {
   Scoundrel::init_scoundrel(800, 600, 60);
   Demo demo;
   //TODO: Load resources here
-  //
-  //TODO this won't be how it really works. We might pass a reference to a 2D array or something
+
   tile_layer.attach_map(game_map, map_width, map_height);
   Scoundrel::insert_layer(&tile_layer, 0);
   Scoundrel::set_camera(&camera);
   Scoundrel::set_frame_handler(&demo);
   Scoundrel::game_loop();
 
-  // re-init the demo as a basic scroll map with a sprite that wanders around
-  // animated.
   for (int i = 0; i < map_height; ++i) {
     delete game_map[i];
   }
