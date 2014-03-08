@@ -2,7 +2,11 @@
 
 #include "camera.h"
 #include "layer.h"
+
+//TODO: This is a terrible place for Point to live
+#include "scoundrel_utils.h"
 #include "tile.h"
+#include "tile_helper.h"
 #include "types.h"
 
 #ifndef SCOUNDREL_TILE_LAYER

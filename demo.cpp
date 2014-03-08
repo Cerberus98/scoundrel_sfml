@@ -87,6 +87,8 @@ int main(int argc, char ** argv) {
   Scoundrel::TileLayer tile_layer(tile_width, tile_height);
   Scoundrel::RectangleDrawable rect(32, 32);
   Scoundrel::Camera camera;
+  camera.set_window_size(screen_width, screen_height);
+  camera.set_absolute(0, 0);
 
   tile_registry[0].set_drawable(&rect);
 

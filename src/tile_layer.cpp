@@ -8,16 +8,32 @@ namespace Scoundrel {
   }
 
   void TileLayer::draw(sf::RenderWindow* window, Camera* camera) {
-    Point pos = camera->position();
-    U32 x = pos.x;
-    U32 y = pos.y;
-
     if (_map) {
-      for (int i = 0; i < _map_height; ++i) {
-        for (int j = 0; j < _map_width; ++j) {
-          U32 tile_x = j * _tile_width;
-          U32 tile_y = i * _tile_height;
-          _map[i][j]->draw(window, tile_x, tile_y);
+      Point camera_pos = camera->position();
+      TileHelper tile_helper(_tile_width, _tile_height);
+      Rectangle view = camera->get_view_rect();
+      Point draw_start = tile_helper.toTileCoords(view.left(), view.top());
+      Point draw_end = tile_helper.toTileCoords(view.right(), view.bottom());
+
+      // Some basic attempts at tile clipping
+      draw_start.x = draw_start.x < 0 ? 0 : draw_start.x;
+      draw_start.y = draw_start.y < 0 ? 0 : draw_start.y;
+      draw_start.x = draw_start.x > _map_width ? _map_width : draw_start.x;
+      draw_start.y = draw_start.y > _map_height ? _map_height : draw_start.y;
+      draw_end.x = draw_end.x > _map_width ? _map_width : draw_end.x;
+      draw_end.y = draw_end.y > _map_height ? _map_height : draw_end.y;
+      draw_end.x = draw_end.x < 0 ? 0 : draw_end.x;
+      draw_end.y = draw_end.y < 0 ? 0 : draw_end.y;
+
+      for (int i=draw_start.y-1; i < draw_end.y+1; ++i) {
+        Point row_coords = tile_helper.fromTileCoords(0, i);
+        if (i < 0 || i == _map_height)
+          continue;
+        for (int j=draw_start.x-1; j < draw_end.x+1; ++j) {
+          if (j < 0 || j == _map_width)
+            continue;
+
+          _map[j][i]->draw(window, Point(j * _tile_width - camera_pos.x, i * _tile_height - camera_pos.y));
         }
       }
     }
