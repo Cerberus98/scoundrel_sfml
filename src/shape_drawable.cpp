@@ -9,6 +9,7 @@ namespace Scoundrel {
   void RectangleDrawable::draw(sf::RenderTarget& target, sf::RenderStates states) const
   {
     sf::RectangleShape rect;
+    states.transform *= getTransform();
     rect.setSize(sf::Vector2f(_width, _height));
     rect.setFillColor(sf::Color::Green);
     target.draw(rect, states);

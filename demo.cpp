@@ -61,6 +61,17 @@ void test_linked_list() {
   std::cout << std::endl;
 }
 
+
+void init_map(Scoundrel::Tile***& game_map, Scoundrel::Tile* tile_registry, Scoundrel::U32 map_width, Scoundrel::U32 map_height) {
+  game_map = new Scoundrel::Tile**[map_height];
+  for (int i = 0; i < map_height; ++i) {
+    game_map[i] = new Scoundrel::Tile*[map_width];
+    for (int j = 0; j < map_width; ++j) {
+      game_map[i][j] = &tile_registry[0];
+    }
+  }
+}
+
 int main(int argc, char ** argv) {
   Scoundrel::U32 screen_width = 800;
   Scoundrel::U32 screen_height = 600;
@@ -71,29 +82,19 @@ int main(int argc, char ** argv) {
   Scoundrel::U32 map_height = (screen_height * 3) / tile_height;
 
   Scoundrel::Tile tile_registry[1];
-
   Scoundrel::Tile*** game_map;
-
-  Scoundrel::init_scoundrel(800, 600, 60);
-  Demo demo;
-
-  //TODO: Load resources here
-
-  Scoundrel::TileLayer tile_layer(800, 600);
+  Scoundrel::TileLayer tile_layer(tile_width, tile_height);
   Scoundrel::RectangleDrawable rect(32, 32);
   tile_registry[0].set_drawable(&rect);
 
-  game_map = new Scoundrel::Tile**[map_height];
-  for (int i = 0; i < map_height; ++i) {
-    game_map[i] = new Scoundrel::Tile*[map_width];
-    for (int j = 0; j < map_width; ++j) {
-      game_map[j][i] = &tile_registry[0];
-    }
-  }
+  init_map(game_map, tile_registry, map_width, map_height);
 
+  Scoundrel::init_scoundrel(800, 600, 60);
+  Demo demo;
+  //TODO: Load resources here
+  //
   //TODO this won't be how it really works. We might pass a reference to a 2D array or something
-  tile_layer.attach_map(game_map);
-
+  tile_layer.attach_map(game_map, map_width, map_height);
   Scoundrel::insert_layer(&tile_layer, 0);
   Scoundrel::set_frame_handler(&demo);
   Scoundrel::game_loop();
