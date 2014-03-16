@@ -29,6 +29,7 @@ namespace Scoundrel {
   sf::RenderWindow* init_window() {
     sf::RenderWindow* game_window = new sf::RenderWindow();
     game_window->create(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "Scoundrel");
+    game_window->setVerticalSyncEnabled(true);
     return game_window;
   }
 
@@ -69,7 +70,7 @@ namespace Scoundrel {
 
   void init_scoundrel(int window_width, int window_height, int framerate) {
     max_framerate = framerate;
-    U64 frame_time = (1.0f / float(max_framerate)) * 100000;
+    frame_time = (1.0f / float(max_framerate)) * 100000.f;
 
     game_window = init_sfml(window_width, window_height);
     init_graphics();
@@ -163,7 +164,7 @@ namespace Scoundrel {
     U64 sleep_time, elapsed;
     while (game_window->isOpen()) {
       //TODO: Don't always automatically do this
-      game_window->clear(sf::Color::Black);
+      game_window->clear(sf::Color::Blue);
 
       LinkedList<Layer *>::iter list_iter = _layers.get_iterator();
       while (list_iter.next()) {
@@ -177,8 +178,8 @@ namespace Scoundrel {
       // TODO: Decide on run time resolution. Book has suggestions
       // runtime += (sleep_time + elapsed);
 
-      if (sleep_time >= 0.f)
-        game_clock.wait(sleep_time);
+      //if (sleep_time >= 0.f)
+      //  game_clock.wait(sleep_time);
       game_window->display();
       _game->frame(elapsed);
       game_clock.restart();

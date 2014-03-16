@@ -78,12 +78,15 @@ void test_linked_list() {
 
 
 void init_map(Scoundrel::Tile***& game_map, Scoundrel::Tile* tile_registry, Scoundrel::U32 map_width, Scoundrel::U32 map_height) {
+  Scoundrel::U32 toggle = 0;
   game_map = new Scoundrel::Tile**[map_height];
   for (int i = 0; i < map_height; ++i) {
     game_map[i] = new Scoundrel::Tile*[map_width];
     for (int j = 0; j < map_width; ++j) {
-      game_map[i][j] = &tile_registry[0];
+      game_map[i][j] = &tile_registry[toggle];
+      toggle ^= 1;
     }
+    toggle ^= 1;
   }
 }
 
@@ -93,18 +96,20 @@ int main(int argc, char ** argv) {
   Scoundrel::U32 tile_width = 32;
   Scoundrel::U32 tile_height = 32;
 
-  Scoundrel::U32 map_width = (screen_width * 3) / tile_width;
+  Scoundrel::U32 map_width = (screen_width * 4) / tile_width;
   Scoundrel::U32 map_height = (screen_height * 3) / tile_height;
 
-  Scoundrel::Tile tile_registry[1];
+  Scoundrel::Tile tile_registry[2];
   Scoundrel::Tile*** game_map;
   Scoundrel::TileLayer tile_layer(tile_width, tile_height);
-  Scoundrel::RectangleDrawable rect(32, 32);
+  Scoundrel::RectangleDrawable green_rect(32, 32, sf::Color::Green);
+  Scoundrel::RectangleDrawable yellow_rect(32, 32, sf::Color::Yellow);
   Scoundrel::Camera camera;
   camera.set_window_size(screen_width, screen_height);
-  camera.set_absolute(0, 0);
+  camera.set_absolute(-2, -2);
 
-  tile_registry[0].set_drawable(&rect);
+  tile_registry[0].set_drawable(&green_rect);
+  tile_registry[1].set_drawable(&yellow_rect);
 
   init_map(game_map, tile_registry, map_width, map_height);
 

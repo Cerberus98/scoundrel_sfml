@@ -14,13 +14,13 @@ namespace Scoundrel {
   public:
     Tile();
     Tile(Drawable* drawable);
-    void draw(sf::RenderWindow* window, U32 x, U32 y);
+    void draw(sf::RenderWindow* window, I32 x, I32 y);
     void draw(sf::RenderWindow* window, Point position);
     void set_drawable(Drawable* drawable);
     Drawable * get_drawable();
 
   private:
-    void _draw(sf::RenderWindow* window, U32 x, U32 y);
+    void _draw(sf::RenderWindow* window, I32 x, I32 y);
     Drawable* _drawable;
     //TODO: This needs a reference back to the array with pointer back to the array later
     //      See http://www.codeofhonor.com/blog/tough-times-on-the-road-to-starcraft for excellent reasons why

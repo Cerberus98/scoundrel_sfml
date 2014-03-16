@@ -17,7 +17,7 @@ namespace Scoundrel {
     return _drawable;
   }
 
-  void Tile::draw(sf::RenderWindow* window, U32 x, U32 y) {
+  void Tile::draw(sf::RenderWindow* window, I32 x, I32 y) {
     if (_drawable) {
       _drawable->setPosition(x, y);
       window->draw(*_drawable);

@@ -1,6 +1,6 @@
 CC=g++
 INCLUDE=-I./include
-CFLAGS=-lsfml-window -lsfml-system -lsfml-graphics -lsfml-audio -wALL -ljson -Qunused-arguments
+CFLAGS=-lsfml-window -lsfml-system -lsfml-graphics -lsfml-audio -ljson -Qunused-arguments
 # -I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/usr/include/python2.7
 LIB_DIR=lib
 SOURCE_DIR=src

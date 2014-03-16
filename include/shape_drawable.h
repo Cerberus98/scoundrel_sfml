@@ -17,11 +17,12 @@ namespace Scoundrel {
 
   class RectangleDrawable : public ShapeDrawable {
   public:
-    RectangleDrawable(U32 width, U32 height);
+    RectangleDrawable(U32 width, U32 height, sf::Color color);
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
   
   private:
     U32 _width, _height;
+    sf::Color _color;
 
   };
 }
