@@ -2,9 +2,13 @@
 
 namespace Scoundrel {
   Camera::Camera() {
+    _camera_upper_left.x = 0;
+    _camera_upper_left.y = 0;
+    _camera_lower_right.x = 0;
+    _camera_lower_right.y = 0;
   }
 
-  Camera::Camera(int window_width, int window_height, float snap_x, float snap_y) {
+  Camera::Camera(U32 window_width, U32 window_height, float snap_x, float snap_y) {
     _window_width = window_width; 
     _window_height = window_height; 
     _snap_x = snap_x; 
@@ -19,7 +23,7 @@ namespace Scoundrel {
                      _camera_upper_left.y + _window_height);
   }
 
-  void Camera::set_window_size(int width, int height) {
+  void Camera::set_window_size(U32 width, U32 height) {
     _window_width = width; 
     _window_height = height; 
   }
@@ -30,18 +34,18 @@ namespace Scoundrel {
   }
 
   void Camera::calculate_snap() {
-    _snap_left = int(float(_window_width) * _snap_x);
-    _snap_right = int(float(_window_width) * (1.0f - _snap_x));
-    _snap_top = int(float(_window_height) * _snap_y);
-    _snap_bottom = int(float(_window_height) * (1.0f - _snap_y));
+    _snap_left = U32(float(_window_width) * _snap_x);
+    _snap_right = U32(float(_window_width) * (1.0f - _snap_x));
+    _snap_top = U32(float(_window_height) * _snap_y);
+    _snap_bottom = U32(float(_window_height) * (1.0f - _snap_y));
   }
 
-  void Camera::set_absolute(int x, int y) {
+  void Camera::set_absolute(I32 x, I32 y) {
     _camera_upper_left.x = x;
     _camera_upper_left.y = y;
   }
 
-  void Camera::move(int delta_x, int delta_y) {
+  void Camera::move(I32 delta_x, I32 delta_y) {
     _camera_upper_left.x += delta_x;
     _camera_upper_left.y += delta_y;
     _camera_lower_right.x += delta_x;

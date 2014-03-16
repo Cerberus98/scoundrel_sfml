@@ -16,6 +16,7 @@
 #include <SFML/Window.hpp>
 
 #include "animation.h"
+#include "camera.h"
 #include "clock.h"
 #include "collidable.h"
 #include "core.h"
@@ -33,8 +34,7 @@
 namespace Scoundrel {
   class FrameHandler {
   public:
-    virtual void frame_start() = 0;
-    virtual void frame_end(U64 elapsed) = 0;
+    virtual void frame(U64 elapsed) = 0;
   };
 
   enum game_modes {GAME_PLAY, GAME_END, GAME_WIN, GAME_NEXT_LEVEL, GAME_MAP_EDIT};
@@ -49,6 +49,11 @@ namespace Scoundrel {
   void init_scoundrel(std::string path);
   void init_scoundrel(int window_width, int window_height, int framerate);
   void set_frame_handler(FrameHandler* game);
+  void handle_events(sf::RenderWindow* window);
+  KeyState get_key_state();
+
+  void set_camera(Camera* camera);
+  Camera* get_camera();
 
   // Returns elapsed time of last frame
   void game_loop();
@@ -63,6 +68,9 @@ namespace Scoundrel {
   int max_framerate;
   U64 frame_time;
   FrameHandler * _game;
+
+  Camera* _camera;
+  KeyState _key_state;
 
   //TODO: this should really be a linked list, but this is for testing
   LinkedList<Layer* > _layers;
